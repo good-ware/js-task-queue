@@ -1,22 +1,23 @@
 {
-  "name": "async-queue",
-  "version": "1.0.1"0
-  "author": "dev-guy",
-  "description": "Async-friendly queue for JavaScript",
+  "name": "@goodware/task-pool",
+  "version": "1.0.0",
+  "author": "goodware",
+  "description": "Async-friendly pool for limiting the number of background tasks",
   "scripts": {
     "prettier": "prettier . --write",
     "lint": "eslint . --fix",
     "test": "node tests/test.js"
   },
-  "main": "AsyncQueue.js",
+  "main": "TaskPool.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dev-guy/async-queue"
+    "url": "https://github.com/good-ware/task-pool"
   },
-  "homepage": "https://github.com/dev-guy/async-queue/blob/master/README.md",
+  "homepage": "https://github.com/good-ware/async-queue/blob/master/README.md",
   "keywords": [
     "queue",
-    "async"
+    "async",
+    "concurrent"
   ],
   "license": "2BSD",
   "dependencies": {
