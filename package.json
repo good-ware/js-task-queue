@@ -1,6 +1,6 @@
 {
   "name": "async-queue",
-  "version": "1.0.1",
+  "version": "1.0.1"0
   "author": "dev-guy",
   "description": "Async-friendly queue for JavaScript",
   "scripts": {
