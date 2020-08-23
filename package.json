@@ -2,7 +2,7 @@
   "name": "@goodware/task-queue",
   "version": "1.0.2",
   "author": "goodware",
-  "description": "Async-friendly queue for limiting the number of background tasks",
+  "description": "Queue for limiting the number of background tasks",
   "keywords": [
     "queue",
     "async",
@@ -19,7 +19,7 @@
     "type": "git",
     "url": "https://github.com/good-ware/js-task-queue"
   },
-  "license": "2BSD",
+  "license": "BSD-2-Clause",
   "dependencies": {
     "joi": "^17.2.1"
   },
