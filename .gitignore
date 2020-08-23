@@ -1,0 +1,12 @@
+.DS_Store
+.idea
+.vscode
+*~
+*.orig
+*.sw*
+npm-debug.log
+coverage/
+logs/
+node_modules/
+workspace/
+

@@ -1,0 +1,32 @@
+{
+  "name": "async-queue",
+  "version": "1.0.1",
+  "author": "dev-guy",
+  "description": "Async-friendly queue for JavaScript",
+  "scripts": {
+    "prettier": "prettier . --write",
+    "lint": "eslint . --fix",
+    "test": "node tests/test.js"
+  },
+  "main": "AsyncQueue.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dev-guy/async-queue"
+  },
+  "homepage": "https://github.com/dev-guy/async-queue/blob/master/README.md",
+  "keywords": [
+    "queue",
+    "async"
+  ],
+  "license": "2BSD",
+  "dependencies": {
+    "joi": "^17.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.6.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "prettier": "^2.0.5"
+  }
+}
