@@ -2,7 +2,7 @@
 const Joi = require('joi');
 
 const optionsSchema = Joi.object({
-  name: Joi.string().description('(Optional) The name of this scheduler. It is logged.'),
+  name: Joi.string().description('The name of this scheduler. It is logged.'),
   size: Joi.number()
     .integer()
     .min(1)
@@ -12,10 +12,10 @@ const optionsSchema = Joi.object({
 });
 
 /**
- * @description Promise queue/scheduler. Manages tasks to execute in a queue with a maximum size.
+ * @description Manages tasks to execute in a queue with a maximum size.
  * @example
  *   // The following script instantiates at most two promises at a time. It outputs roughly: 2, 1, 4, 3
- *   const scheduler = new Scheduler({size: 2});
+ *   const scheduler = new TaskQueue({size: 2});
  *   await scheduler.push(()=>new Promise(resolve=>setTimeout(()=>resolve(console.log('1 '+Date.now())), 400)));
  *   await scheduler.push(()=>new Promise(resolve=>setTimeout(()=>resolve(console.log('2 '+Date.now())), 300)));
  *   // The next line waits a little more than 300ms for the line above it to finish
@@ -29,7 +29,7 @@ const optionsSchema = Joi.object({
  *  {Number} taskCount The number of currently executing tasks
  *  {Array} waiters
  */
-class Scheduler {
+class TaskQueue {
   /**
    * @description Constructor. There is no need to invoke start() after creating a new object.
    * @param {Object} options
@@ -191,4 +191,4 @@ class Scheduler {
   }
 }
 
-module.exports = Scheduler;
+module.exports = TaskQueue;
