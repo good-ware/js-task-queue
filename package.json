@@ -1,7 +1,6 @@
 {
   "name": "@goodware/task-queue",
-  "version": "1.0.2",
-  "author": "goodware",
+  "version": "1.0.3",
   "description": "Queue for limiting the number of background tasks",
   "keywords": [
     "queue",
