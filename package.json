@@ -1,6 +1,6 @@
 {
   "name": "@goodware/task-queue",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Queue for limiting the number of background tasks",
   "keywords": [
     "queue",
@@ -10,7 +10,7 @@
   "scripts": {
     "lint": "eslint . --fix",
     "prettier": "prettier . --write",
-    "publish": "npm publish --access=public",
+    "pub": "npm publish --access=public",
     "test": "node tests/test.js"
   },
   "main": "TaskQueue.js",

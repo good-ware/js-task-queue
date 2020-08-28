@@ -11,6 +11,8 @@ const optionsSchema = Joi.object({
   logger: Joi.object(),
 });
 
+const logTag = 'taskQueue';
+
 /**
  * @description Manages tasks to execute in a queue with a maximum size.
  * @example
@@ -40,8 +42,7 @@ class TaskQueue {
 
     Object.assign(this, validation.value);
 
-    // This class only logs at the default level
-    if (this.logger && this.logger.isLevelEnabled()) this.logger = this.logger.logger('scheduler');
+    if (this.logger && !this.logger.isLevelEnabled(logTag)) delete this.logger;
 
     this.taskCount = 0;
     this.waiters = [];
@@ -54,7 +55,7 @@ class TaskQueue {
     const newTasks = this.taskCount - 1;
 
     if (this.logger) {
-      this.logger.default({
+      this.logger.log(logTag, {
         message: `Task finished for '${this.name}'. Tasks: ${newTasks}`,
         name: this.name,
         taskCount: newTasks,
@@ -64,7 +65,7 @@ class TaskQueue {
     if (newTasks < 0) {
       const message = `Task counter is negative for '${this.name}'`;
       if (this.logger) {
-        this.logger.error({
+        this.logger.log(['error', logTag], {
           message,
           name: this.name,
         });
@@ -110,7 +111,7 @@ class TaskQueue {
     const taskCount = ++this.taskCount;
 
     if (this.logger) {
-      this.logger.default({
+      this.logger.log(logTag, {
         message: `Task started for '${this.name}'. Tasks: ${taskCount}`,
         name: this.name,
         taskCount,
