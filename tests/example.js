@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
-// eslint-disable-next-line global-require, import/no-unresolved
-const queue = new (require('@goodware/task-queue'))({ size: 2 });
 
-// This script outputs: Task 2, Task 1, Task 4, Task 3
+// This script outputs (roughly): Task 2, Task 1, Task 4, Task 3
 
 (async () => {
+  // eslint-disable-next-line global-require, import/no-unresolved
+  const queue = new (require('@goodware/task-queue'))({ size: 2 });
+
   // Task #1 : push() returns immediately because the queue is empty. 'await' doesn't wait for the task to complete.
   await queue.push(() =>
     new Promise((resolve) => setTimeout(() => {console.log(`Task 1 ${Date.now()}`); resolve();}, 400)));
