@@ -2,7 +2,7 @@
 const Joi = require('joi');
 
 const optionsSchema = Joi.object({
-  name: Joi.string().description('The name of this scheduler. It is logged.'),
+  name: Joi.string().description('The name of the queue. It is logged.'),
   size: Joi.number()
     .integer()
     .min(1)
@@ -17,21 +17,22 @@ const logTag = 'taskQueue';
  * @description Manages tasks to execute in a queue with a maximum size.
  * @example
  *   // The following script instantiates at most two promises at a time. It outputs roughly: 2, 1, 4, 3
- *   const scheduler = new TaskQueue({size: 2});
- *   await scheduler.push(()=>new Promise(resolve=>setTimeout(()=>resolve(console.log('1 '+Date.now())), 400)));
- *   await scheduler.push(()=>new Promise(resolve=>setTimeout(()=>resolve(console.log('2 '+Date.now())), 300)));
+ *   const queue = new TaskQueue({size: 2});
+ *   await queue.push(()=>new Promise(resolve=>setTimeout(()=>resolve(console.log('1 '+Date.now())), 400)));
+ *   await queue.push(()=>new Promise(resolve=>setTimeout(()=>resolve(console.log('2 '+Date.now())), 300)));
  *   // The next line waits a little more than 300ms for the line above it to finish
- *   await scheduler.push(()=>new Promise(resolve=>setTimeout(()=>resolve(console.log('3 '+Date.now())), 200)));
- *   await scheduler.push(()=>new Promise(resolve=>setTimeout(()=>resolve(console.log('4 '+Date.now())), 100)));
- *
- * Properties:
- *  {Boolean} stopping
- *  {Boolean} stopped
- *  {Object} logger
- *  {Number} taskCount The number of currently executing tasks
- *  {Array} waiters
+ *   await queue.push(()=>new Promise(resolve=>setTimeout(()=>resolve(console.log('3 '+Date.now())), 200)));
+ *   await queue.push(()=>new Promise(resolve=>setTimeout(()=>resolve(console.log('4 '+Date.now())), 100)));
  */
 class TaskQueue {
+  /**
+   * Properties:
+   *  {Boolean} stopping
+   *  {Boolean} stopped
+   *  {Object} logger
+   *  {Number} taskCount The number of currently executing tasks
+   *  {Function[]} waiters
+   */
   /**
    * @description Constructor. There is no need to invoke start() after creating a new object.
    * @param {Object} options
@@ -89,7 +90,7 @@ class TaskQueue {
    *  a new Promise that resolves to the value returned by func or rejects using the exception thrown by it. Therefore,
    *  it is not only possible to wait for func to start, it is also possible to wait for it to finish. For example:
    *  // Wait for an open slot in the queue
-   *  const ret = await scheduler.push(()=>new Promise(resolve=>setTimeout(()=>resolve('Hello'), 5000)));
+   *  const ret = await queue.push(()=>new Promise(resolve=>setTimeout(()=>resolve('Hello'), 5000)));
    *  // Wait for 5 seconds and output Hello
    *  console.log(await ret.promise);
    */
