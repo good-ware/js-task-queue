@@ -7,8 +7,8 @@ const TaskQueue = require('../TaskQueue');
  */
 async function test1() {
   // The following code will only run two promises concurrently at once.
-  const scheduler = new TaskQueue({ size: 2 });
-  const ret = await scheduler.push(() => new Promise((resolve) => setTimeout(() => resolve(new Date()), 3000)));
+  const queue = new TaskQueue({ size: 2 });
+  const ret = await queue.push(() => new Promise((resolve) => setTimeout(() => resolve(new Date()), 3000)));
   console.log(`Waiting for value ${new Date()}`);
   console.log(`Done waiting for value: ${await ret.promise}`);
 }
@@ -19,8 +19,8 @@ async function test1() {
  */
 async function test2() {
   // The following code will only run two promises concurrently at once.
-  const scheduler = new TaskQueue({ size: 2 });
-  const ret = await scheduler.push(
+  const queue = new TaskQueue({ size: 2 });
+  const ret = await queue.push(
     () => new Promise((resolve, reject) => setTimeout(() => reject(new Error('hello there')), 2000))
   );
   console.log(`Waiting for error ${new Date()}`);
@@ -42,18 +42,19 @@ async function test2() {
  * @return {Promise}
  */
 async function test3() {
-  // The following code will only run two promises concurrently at once.
-  const scheduler = new TaskQueue({ size: 2 });
-  await scheduler.push(() => new Promise((resolve) => setTimeout(() => resolve(console.log(`1 ${Date.now()}`)), 400)));
-  await scheduler.push(() => new Promise((resolve) => setTimeout(() => resolve(console.log(`2 ${Date.now()}`)), 300)));
-  // The next line of code will wait a little more than 300ms for the line above
-  // it to finish
-  await scheduler.push(() => new Promise((resolve) => setTimeout(() => resolve(console.log(`3 ${Date.now()}`)), 200)));
-  await scheduler.push(() => new Promise((resolve) => setTimeout(() => resolve(console.log(`4 ${Date.now()}`)), 100)));
+  const queue = new TaskQueue({ size: 2 });
+  await queue.push(() => new Promise((resolve) => setTimeout(() => resolve(), 100)));
+  await queue.wait();
+}
 
-  await scheduler.stop();
-  scheduler.start();
-  await scheduler.wait();
+/**
+ * @description Test
+ * @return {Promise}
+ */
+async function test4() {
+  const queue = new TaskQueue({ size: 2 });
+  await queue.push(() => new Promise((resolve) => setTimeout(() => resolve(), 100)));
+  await queue.stop();
 }
 
 /**
@@ -61,7 +62,8 @@ async function test3() {
  * @return {Promise}
  */
 function go() {
-  return Promise.all([test1(), test2(), test3()]);
+  return Promise.all([test1(), test2(), test3(), test4()]);
 }
 
-go().catch(console.error);
+go().then(()=>console.log('Successful'), console.error);
+

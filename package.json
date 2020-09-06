@@ -1,7 +1,7 @@
 {
   "name": "@goodware/task-queue",
-  "version": "1.0.5",
-  "description": "Queue for limiting the number of background tasks",
+  "version": "1.0.6",
+  "description": "A task queue",
   "keywords": [
     "queue",
     "async",
@@ -23,10 +23,10 @@
     "joi": "^17.2.1"
   },
   "devDependencies": {
-    "eslint": "^7.6.0",
+    "eslint": "^7.8.1",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.22.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.1.1"
   }
 }
