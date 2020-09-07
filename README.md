@@ -4,7 +4,7 @@
 
 - [npm](https://www.npmjs.com/package/@goodware/task-queue)
 - [Git](https://github.com/good-ware/js-task-queue)
-- [API](https://good-ware.github.io/js-task-queue)
+- [API](https://good-ware.github.io/js-task-queue/)
 
 # Requirements
 
