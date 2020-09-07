@@ -1,5 +1,11 @@
 # TaskQueue: A lightweight task queue for limiting resource usage
 
+# Links
+
+- [npm](https://www.npmjs.com/package/@goodware/task-queue)
+- [Git](https://github.com/good-ware/js-task-queue)
+- [API](https://good-ware.github.io/js-task-queue)
+
 # Requirements
 
 ECMAScript 2017
