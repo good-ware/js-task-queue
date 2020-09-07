@@ -1,4 +1,4 @@
-# TaskQueue: A lightweight task queue for limiting resource usage
+# @goodware/task-queue: A lightweight task queue for limiting resource usage
 
 # Links
 
