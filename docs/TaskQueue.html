@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#full">full</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#pushIfAvailable">pushIfAvailable</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#taskFinished">taskFinished</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#isFull">isFull</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#pushIfAvailable">pushIfAvailable</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#taskFinished">taskFinished</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li>
 </nav>
 
 <div id="main">
@@ -216,14 +216,14 @@
 
     
 
-    <h4 class="name" id="full"><span class="type-signature"></span>full<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    <h4 class="name" id="isFull"><span class="type-signature"></span>isFull<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Returns true if the maximum number of tasks are running</p>
+    <p>Is the queue full?</p>
 </div>
 
 
@@ -259,7 +259,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line143">line 143</a>
+        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line144">line 144</a>
     </li></ul></dd>
     
 
@@ -307,6 +307,10 @@
     </dd>
 </dl>
 
+
+<div class="param-desc">
+    <p>true if the maximum number of tasks are queued</p>
+</div>
 
     
 </div>
@@ -364,7 +368,7 @@ before invoking task().</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line88">line 88</a>
+        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line89">line 89</a>
     </li></ul></dd>
     
 
@@ -495,7 +499,8 @@ console.log(await ret.promise);</p>
 
 
 <div class="description">
-    <p>Calls push(task) if the queue has an available slot</p>
+    <p>Calls push(task) if the queue has an available slot. If the queue is full, this method returns
+immediately with a falsey value. Otherwise, it returns the same value as the push() method.</p>
 </div>
 
 
@@ -531,7 +536,7 @@ console.log(await ret.promise);</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line152">line 152</a>
+        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line154">line 154</a>
     </li></ul></dd>
     
 
@@ -632,10 +637,6 @@ console.log(await ret.promise);</p>
 </dl>
 
 
-<div class="param-desc">
-    <p>Returns a falsey value if full</p>
-</div>
-
     
 </div>
 
@@ -691,7 +692,7 @@ console.log(await ret.promise);</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line180">line 180</a>
+        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line182">line 182</a>
     </li></ul></dd>
     
 
@@ -738,7 +739,7 @@ console.log(await ret.promise);</p>
 
 
 <div class="description">
-    <p>Waits for all running tasks to complete. Prevents additional calls to push().</p>
+    <p>Waits for running tasks to complete. Prevents additional calls to push().</p>
 </div>
 
 
@@ -774,7 +775,7 @@ console.log(await ret.promise);</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line170">line 170</a>
+        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line172">line 172</a>
     </li></ul></dd>
     
 
@@ -814,7 +815,7 @@ console.log(await ret.promise);</p>
 
     
 
-    <h4 class="name" id="taskFinished"><span class="type-signature"></span>taskFinished<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="taskFinished"><span class="type-signature">(private) </span>taskFinished<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -857,7 +858,7 @@ console.log(await ret.promise);</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line48">line 48</a>
+        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line49">line 49</a>
     </li></ul></dd>
     
 
@@ -904,7 +905,7 @@ console.log(await ret.promise);</p>
 
 
 <div class="description">
-    <p>Waits for all running tasks to complete. Callers are not prevented callers from calling push(); thus
+    <p>Waits for running tasks to complete. Callers are not prevented callers from calling push(); thus
 there is no guarantee that when the returned Promise resolves, the queue will actually be empty.</p>
 </div>
 
@@ -941,7 +942,7 @@ there is no guarantee that when the returned Promise resolves, the queue will ac
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line162">line 162</a>
+        <a href="TaskQueue.js.html">TaskQueue.js</a>, <a href="TaskQueue.js.html#line164">line 164</a>
     </li></ul></dd>
     
 
@@ -1014,7 +1015,7 @@ there is no guarantee that when the returned Promise resolves, the queue will ac
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a> on Mon Sep 07 2020 08:43:05 GMT-0700 (Pacific Daylight Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.5</a> on Mon Sep 07 2020 08:50:59 GMT-0700 (Pacific Daylight Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -44,6 +44,7 @@ class TaskQueue {
 
   /**
    * @description Called when a task finishes
+   * @private
    */
   taskFinished() {
     const newTasks = this.taskCount - 1;
@@ -137,17 +138,18 @@ class TaskQueue {
   }
 
   /**
-   * @description Returns true if the maximum number of tasks are running
-   * @return {Boolean}
+   * @description Is the queue full?
+   * @return {Boolean} true if the maximum number of tasks are queued
    */
-  full() {
+  isFull() {
     return this.taskCount >= this.size;
   }
 
   /**
-   * @description Calls push(task) if the queue has an available slot
+   * @description Calls push(task) if the queue has an available slot. If the queue is full, this method returns
+   *  immediately with a falsey value. Otherwise, it returns the same value as the push() method.
    * @param {Function} task
-   * @return {Promise} Returns a falsey value if full
+   * @return {Promise}
    */
   pushIfAvailable(task) {
     if (this.taskCount >= this.size) return false;
@@ -155,7 +157,7 @@ class TaskQueue {
   }
 
   /**
-   * @description Waits for all running tasks to complete. Callers are not prevented callers from calling push(); thus
+   * @description Waits for running tasks to complete. Callers are not prevented callers from calling push(); thus
    *  there is no guarantee that when the returned Promise resolves, the queue will actually be empty.
    * @return {Promise}
    */
@@ -165,7 +167,7 @@ class TaskQueue {
   }
 
   /**
-   * @description Waits for all running tasks to complete. Prevents additional calls to push().
+   * @description Waits for running tasks to complete. Prevents additional calls to push().
    */
   async stop() {
     this.stopping = true;
