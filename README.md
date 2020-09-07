@@ -4,6 +4,10 @@
 
 ECMAScript 2017
 
+# Installation
+
+`npm i --save @goodware/task-queue`
+
 # Overview
 
 This lightweight, single-dependency (Joi) queue class limits the number of tasks that can execute at a time. The primary
@@ -19,10 +23,6 @@ example below.
 Although several packages address this use case, this class is apparently the only one that allows tasks to be queued
 post-instantiation without using generators.
 
-# Installation
-
-`npm i --save @goodware/task-queue`
-
 # Example
 
 This example runs at most two tasks at a time. It outputs: 2, 1, 4, 3.
@@ -31,7 +31,8 @@ This example runs at most two tasks at a time. It outputs: 2, 1, 4, 3.
 (async () => {
   const queue = new (require('@goodware/task-queue'))({ size: 2 });
 
-  // Task #1 : push() returns immediately because the queue is empty. 'await' doesn't wait for the task to complete.
+  // Task #1 : push() returns immediately because the queue is empty. 'await'
+  // doesn't wait for the task to complete.
   await queue.push(
     () =>
       new Promise((resolve) =>
@@ -66,8 +67,8 @@ This example runs at most two tasks at a time. It outputs: 2, 1, 4, 3.
       )
   );
 
-  // The queue is full again. 300 ms have already passed. Task #1 will terminate in about 100 ms, leaving task #3 in the
-  // queue.
+  // The queue is full again. 300 ms have already passed. Task #1 will
+  // terminate in about 100 ms, leaving task #3 in the queue.
 
   // Task #4 : push() waits until task #1 finishes
   const ret = await queue.push(
