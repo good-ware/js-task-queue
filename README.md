@@ -3,7 +3,7 @@
 # Links
 
 - [npm](https://www.npmjs.com/package/@goodware/task-queue)
-- [Git](https://github.com/good-ware/js-task-queue)
+- [git](https://github.com/good-ware/js-task-queue)
 - [API](https://good-ware.github.io/js-task-queue/)
 
 # Requirements
@@ -19,15 +19,15 @@ ECMAScript 2017
 This lightweight, single-dependency (Joi) queue class limits the number of tasks that can execute at a time. The primary
 purpose of this queue is to limit the usage of resources such as memory and database connections.
 
-Tasks are queued via async push(). This method accepts a function that starts a task and optionally returns a Promise.
-Tasks are removed from the queue when they finish. When the queue's maximum size has been reached, push() waits for a
-a task to complete. The provided function is called only when the queue has an available slot. push() returns an object
-with a 'promise' property. This property is set to the return value of the provided function if it returns a Promise;
-otherwise, it's a new Promise that resolves to the outcome of the function (either an exception or a value). See the
-example below.
+Although several packages address this use case, this package is apparently unique in that it that allows tasks to be
+queued post-instantiation without using generators.
 
-Although several packages address this use case, this class is apparently the only one that allows tasks to be queued
-post-instantiation without using generators.
+Tasks are queued via the asynchronous method push(). This method accepts a function that starts a task. Tasks are
+removed from the queue when they finish. When the queue's maximum size has been reached, push() waits for a task to
+complete. The provided function is called only when the queue has an available slot. push() returns an object with a
+'promise' property. This property is set to the return value of the provided function if it returns a Promise;
+otherwise, it is assigned a new Promise that resolves to the outcome of the function (either an exception or a value).
+Refer to the example below.
 
 # Example
 

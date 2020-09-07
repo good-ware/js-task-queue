@@ -1,7 +1,4 @@
 coverage/
-logs/
-node_modules/
-tests/fixtures/
 docs/
-
+node_modules/
 
