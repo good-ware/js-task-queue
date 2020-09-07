@@ -1,7 +1,7 @@
 {
   "name": "@goodware/task-queue",
-  "version": "1.0.6",
-  "description": "A task queue",
+  "version": "1.0.7",
+  "description": "A lightweight task queue for limiting resource usage",
   "keywords": [
     "queue",
     "async",
@@ -11,7 +11,8 @@
     "lint": "eslint . --fix",
     "prettier": "prettier . --write",
     "pub": "npm publish --access=public",
-    "test": "node tests/test.js"
+    "test": "node tests/test.js",
+    "docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose -R README.md *.js"
   },
   "main": "TaskQueue.js",
   "repository": {
@@ -27,6 +28,8 @@
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.22.0",
-    "prettier": "^2.1.1"
+    "prettier": "^2.1.1",
+    "jsdoc": "^3.6.5",
+    "minami": "^1.2.3"
   }
 }

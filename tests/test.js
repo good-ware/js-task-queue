@@ -65,5 +65,4 @@ function go() {
   return Promise.all([test1(), test2(), test3(), test4()]);
 }
 
-go().then(()=>console.log('Successful'), console.error);
-
+go().then(() => console.log('Successful'), console.error);
