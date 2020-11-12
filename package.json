@@ -1,6 +1,6 @@
 {
   "name": "@goodware/task-queue",
-  "version": "1.0.12",
+  "version": "1.1.0",
   "description": "A lightweight task queue for limiting resource usage",
   "keywords": [
     "queue",
@@ -14,22 +14,22 @@
     "test": "node tests/test.js",
     "docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose -R README.md *.js"
   },
-  "main": "TaskQueue.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/good-ware/js-task-queue"
   },
   "license": "BSD-2-Clause",
   "dependencies": {
-    "joi": "^17.2.1"
+    "joi": "^17.3.0"
   },
   "devDependencies": {
-    "eslint": "^7.8.1",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-import": "^2.22.0",
-    "prettier": "^2.1.1",
-    "jsdoc": "^3.6.5",
-    "minami": "^1.2.3"
+    "eslint": "^7.13.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-import": "^2.22.1",
+    "jsdoc": "^3.6.6",
+    "minami": "^1.2.3",
+    "prettier": "^2.1.2"
   }
 }

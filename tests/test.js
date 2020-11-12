@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-const TaskQueue = require('../TaskQueue');
+const TaskQueue = require('../index');
 
 /**
  * @description Test
