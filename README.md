@@ -16,7 +16,7 @@ ECMAScript 2017
 
 ## Overview
 
-This lightweight, battle-tested, single-dependency (Joi) queue class limits the number of tasks (synchronous or asynchronous) that can execute simultaneously, in order to manage the usage of resources such as memory and database connections. Although many other packages address this use case, this one is apparently unique in that it that allows tasks to be queued post-instantiation without using generators.
+This lightweight, battle-tested, single-dependency (Joi) queue class limits the number of tasks (synchronous or asynchronous) that can execute simultaneously in order to manage the usage of resources such as memory and database connections. Although many other packages address this use case, this one is apparently unique in that it that allows tasks to be queued post-instantiation without using generators.
 
 ## Usage
 
@@ -32,7 +32,7 @@ A common misunderstanding is to think the Promise returned by `push()` settles w
 
 In summary:
 
-- Create a queue of size 10 via `new (require('@goodware/task-queue'))({ size: 10 })`
+- Create a queue supporting 10 simultaneously running tasks: `new (require('@goodware/task-queue'))({ size: 10 })`
 - `await queue.push(() => {...})` waits for the provided function to be called
 - `await (await queue.push(() => {...})).promise` waits for the provided function to finish
 
