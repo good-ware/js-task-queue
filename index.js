@@ -148,7 +148,7 @@ class TaskQueue {
   }
 
   /**
-   * @deprecated
+   * @deprecated By full()
    * @description Is the queue full?
    * @return {Boolean} true if the maximum number of tasks are queued
    */

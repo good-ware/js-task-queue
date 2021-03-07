@@ -23,7 +23,8 @@ This lightweight, battle-tested, single-dependency (Joi) queue class limits the 
 A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has only one required property:
 
 |Name|Description|
-|`size`|The maxiumum number of tasks that can execute smultaneously.|
+|----|-----------|
+|`size`|The maximum number of tasks that can execute smultaneously.|
 
 Functions are scheduled for execution via the ascyhronous method `push()`. This method accepts a function and returns a Promise that settles when the provided function is called.
 
