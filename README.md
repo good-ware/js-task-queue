@@ -1,35 +1,41 @@
 # @goodware/task-queue: A lightweight task queue for limiting resource usage
 
-# Links
+## Links
 
 - [npm](https://www.npmjs.com/package/@goodware/task-queue)
 - [git](https://github.com/good-ware/js-task-queue)
 - [API](https://good-ware.github.io/js-task-queue/)
 
-# Requirements
+## Requirements
 
 ECMAScript 2017
 
-# Installation
+## Installation
 
 `npm i --save @goodware/task-queue`
 
-# Overview
+## Overview
 
-This lightweight, single-dependency (Joi) queue class limits the number of tasks that can execute at a time. The primary
-purpose of this queue is to limit the usage of resources such as memory and database connections.
+This lightweight, battle-tested, single-dependency (Joi) queue class limits the number of tasks (synchronous or asynchronous) that can execute simultaneously, in order to manage the usage of resources such as memory and database connections. Although many other packages address this use case, this one is apparently unique in that it that allows tasks to be queued post-instantiation without using generators.
 
-Although several packages address this use case, this package is apparently unique in that it that allows tasks to be
-queued post-instantiation without using generators.
+## Usage
 
-Tasks are queued via the asynchronous method push(). This method accepts a function that starts a task. Tasks are
-removed from the queue when they finish. When the queue's maximum size has been reached, push() waits for a task to
-complete. The provided function is called only when the queue has an available slot. push() returns an object with a
-'promise' property. This property is set to the return value of the provided function if it returns a Promise;
-otherwise, it is assigned a new Promise that resolves to the outcome of the function (either an exception or a value).
-Refer to the example below.
+A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has only one required property:
 
-# Example
+|Name|Description|
+|`size`|The maxiumum number of tasks that can execute smultaneously.|
+
+Functions are scheduled for execution via the ascyhronous method `push()`. This method accepts a function and returns a Promise that settles when the provided function is called.
+
+A common misunderstanding is to think the Promise returned by `push()` settles when the function has finished executing. To wait for the function to finish, use the `.promise` property of the object returned by `push()`.
+
+In summary:
+
+- Create a queue of size 10 via `new (require('@goodware/task-queue'))({ size: 10 })`
+- `await queue.push(() => {...})` waits for the provided function to be called
+- `await queue.push(() => {...}).promise` waits for the provided function to finish
+
+### Example
 
 This example runs at most two tasks at a time. It outputs: 2, 1, 4, 3.
 
@@ -88,4 +94,32 @@ const ret = await queue.push(
 
 // Wait for task #4 to finish
 await ret.promise;
+```
+
+## Advanced Usage
+
+Sometimes it's desirable to limit the number of simultaneous calls to `push()` because, like every other invocation of a function that returns a new object, waiting for a slot in the queue consumes memory.
+
+Consider the following application constraints:
+
+1. Up to 10 'worker' functions can execute simultaneously
+2. When all 10 workers are running, up to 50 tasks can wait for one of the workers to finish
+
+This use case can be implemented with two queue instances: `workers` and `waiters`. The `workers` queue executes tasks as demonstrated in the above example. The `waiters` queue counts the number of tasks that are waiting when `workers` is full.
+
+```js
+const waiters = new (require('@goodware/task-queue'))({ size: 50 });
+const workers = new (require('@goodware/task-queue'))({ size: 10 });
+
+// This is the most basic implementation of backpressure 
+if (waiters.full()) throw Error('Not ready');
+
+// 'await's are intentionally omitted. They are unnecessary for this example.
+waiters.push(() => {
+  // Perform some set-up tasks here, if needed
+  // The waiters queue is used again to avoid race conditions that could allow more than 50 waiters
+  waiters.push(() => workers.push(() => {
+    // Do the work
+  }));
+});
 ```
