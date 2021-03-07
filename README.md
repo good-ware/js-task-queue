@@ -34,7 +34,7 @@ In summary:
 
 - Create a queue of size 10 via `new (require('@goodware/task-queue'))({ size: 10 })`
 - `await queue.push(() => {...})` waits for the provided function to be called
-- `await queue.push(() => {...}).promise` waits for the provided function to finish
+- `await (await queue.push(() => {...})).promise` waits for the provided function to finish
 
 ### Example
 
