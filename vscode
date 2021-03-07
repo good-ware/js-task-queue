@@ -1,0 +1,9 @@
+#!/bin/sh
+
+. $(brew --prefix nvm)/nvm.sh
+nvm i
+git config --local user.name 'dev-guy' 
+git config --local user.email devguy@devguy.com
+export GIT_SSH_COMMAND="ssh -i ~/.ssh/devguy-git"
+code .
+

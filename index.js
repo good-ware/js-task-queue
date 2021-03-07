@@ -23,12 +23,13 @@ class TaskQueue {
    *  {Boolean} stopping
    *  {Boolean} stopped
    *  {Object} logger
-   *  {Number} taskCount The number of currently executing tasks
+   *  {Integer} taskCount The number of currently executing tasks
    *  {Function[]} resolvers
    */
   /**
    * @description Constructor. There is no need to call start() after creating a new object.
    * @param {Object} options
+   * @param {Integer} options.size The maximum number of functions that can execute at a time
    */
   constructor(options) {
     const validation = optionsSchema.validate(options);
@@ -43,8 +44,9 @@ class TaskQueue {
   }
 
   /**
-   * @description Called when a task finishes
    * @private
+   * @ignore
+   * @description Called when a task finishes
    */
   taskFinished() {
     const newTasks = this.taskCount - 1;
@@ -141,8 +143,17 @@ class TaskQueue {
    * @description Is the queue full?
    * @return {Boolean} true if the maximum number of tasks are queued
    */
-  isFull() {
+  full() {
     return this.taskCount >= this.size;
+  }
+
+  /**
+   * @deprecated
+   * @description Is the queue full?
+   * @return {Boolean} true if the maximum number of tasks are queued
+   */
+  isFull() {
+    return this.full();
   }
 
   /**
@@ -151,14 +162,14 @@ class TaskQueue {
    * @param {Function} task
    * @return {Promise}
    */
-  pushIfAvailable(task) {
+  pushUnlessFull(task) {
     if (this.taskCount >= this.size) return false;
     return this.push(task);
   }
 
   /**
    * @description Waits for running tasks to complete. Callers are not prevented callers from calling push(); thus
-   *  there is no guarantee that when the returned Promise resolves, the queue will actually be empty.
+   *  there is no guarantee that when the returned Promise resolves, the queue will have an available slot.
    * @return {Promise}
    */
   async wait() {

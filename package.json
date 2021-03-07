@@ -1,6 +1,6 @@
 {
   "name": "@goodware/task-queue",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A lightweight task queue for limiting resource usage",
   "keywords": [
     "queue",
@@ -21,15 +21,15 @@
   },
   "license": "BSD-2-Clause",
   "dependencies": {
-    "joi": "^17.3.0"
+    "joi": "^17.4.0"
   },
   "devDependencies": {
-    "eslint": "^7.13.0",
+    "eslint": "^7.21.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-import": "^2.22.1",
     "jsdoc": "^3.6.6",
     "minami": "^1.2.3",
-    "prettier": "^2.1.2"
+    "prettier": "^2.2.1"
   }
 }
