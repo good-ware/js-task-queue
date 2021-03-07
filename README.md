@@ -32,7 +32,7 @@ A common misunderstanding is to think the Promise returned by `push()` settles w
 
 In summary:
 
-- Create a queue supporting 10 simultaneously running tasks: `new (require('@goodware/task-queue'))({ size: 10 })`
+- Create a queue that allows at most 10 simultaneously running tasks: `new (require('@goodware/task-queue'))({ size: 10 })`
 - `await queue.push(() => {...})` waits for the provided function to be called
 - `await (await queue.push(() => {...})).promise` waits for the provided function to finish
 
