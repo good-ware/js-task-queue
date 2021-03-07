@@ -28,7 +28,7 @@ A task-queue object is instantiated by providing a configuration object to the c
 
 Functions are scheduled for execution via the asynchronous method `push()`. This method accepts a function and returns a Promise that settles when the provided function is called.
 
-A common misunderstanding is to think the Promise returned by `push()` settles when the function has finished executing. To wait for the function to finish, use the `.promise` property of the object returned by `push()`.
+A common misunderstanding is to think the Promise returned by `push()` settles when the provided function has finished executing. To wait for the function to finish, use the `.promise` property of the object returned by `push()`.
 
 In summary:
 
