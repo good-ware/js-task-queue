@@ -1,4 +1,4 @@
-# @goodware/task-queue: A lightweight task queue for limiting resource usage
+# @goodware/task-queue: A lightweight task queue
 
 ## Links
 
@@ -16,7 +16,7 @@ ECMAScript 2017
 
 ## Overview
 
-This lightweight, battle-tested, single-dependency (Joi) queue class limits the number of tasks (synchronous or asynchronous) that can execute simultaneously in order to manage the usage of resources such as memory and database connections. Although many other packages address this use case, this one is apparently unique in that it that accepts new tasks post-instantiation without using generators.
+This lightweight, battle-tested, single-dependency (Joi) queue class limits the number of tasks (synchronous or asynchronous) that can execute simultaneously, in order to manage the usage of resources such as memory and database connections. Although other packages address this use case, this is apparently the only one that accepts new tasks post-instantiation without using generators.
 
 ## Usage
 
@@ -99,18 +99,20 @@ await ret.promise;
 
 ## Advanced Usage
 
-Sometimes it's desirable to limit the number of simultaneous calls to `push()` because, like every other invocation of a function that returns a new object, waiting for a slot in the queue consumes memory.
+`push()` returns a new Promise each time it is called, thus consuming memory. Depending on your application, it may be necessary to limit calls to `push()` when the queue is full.
 
-Consider the following application constraints:
+For example, consider the following constraints:
 
-1. Up to 10 'worker' functions can execute simultaneously
-2. When all 10 workers are running, up to 50 tasks can wait for one of the workers to finish
+1. Up to 10 worker functions can execute simultaneously
+2. When all 10 workers are running, up to 50 tasks can call `push()`
 
-This use case can be implemented with two queue instances: `workers` and `waiters`. The `workers` queue executes tasks as demonstrated in the above example. The `waiters` queue counts the number of tasks that are waiting when `workers` is full.
+These constraints can be enforced with two queues: `workers` and `waiters`. The `workers` queue executes tasks as demonstrated in the above example. The `waiters` queue counts the number of tasks that are waiting when `workers` is full.
+
+### Example
 
 ```js
-const waiters = new (require('@goodware/task-queue'))({ size: 50 });
 const workers = new (require('@goodware/task-queue'))({ size: 10 });
+const waiters = new (require('@goodware/task-queue'))({ size: 50 });
 
 // This is the most basic implementation of backpressure 
 if (waiters.full()) throw Error('Not ready');

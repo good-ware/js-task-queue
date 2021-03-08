@@ -1,7 +1,7 @@
 {
   "name": "@goodware/task-queue",
-  "version": "1.1.4",
-  "description": "A lightweight task queue for limiting resource usage",
+  "version": "1.1.5",
+  "description": "A lightweight task queue",
   "keywords": [
     "queue",
     "async",
