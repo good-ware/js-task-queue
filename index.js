@@ -14,7 +14,7 @@ const optionsSchema = Joi.object({
 const logTag = 'taskQueue';
 
 /**
- * @description A queue of executing tasks with a maximum size
+ * @description A queue that enforces a maximum number of simultaneously executing tasks
  * @todo Add events
  */
 class TaskQueue {
@@ -198,3 +198,4 @@ class TaskQueue {
 }
 
 module.exports = TaskQueue;
+
