@@ -1,6 +1,9 @@
 /* eslint-disable no-plusplus */
 const Joi = require('joi');
 
+/**
+ * @description Schema for TaskQueue's constructor options
+ */
 const optionsSchema = Joi.object({
   name: Joi.string().description('The name of the queue. It is logged.'),
   size: Joi.number()
@@ -198,4 +201,3 @@ class TaskQueue {
 }
 
 module.exports = TaskQueue;
-

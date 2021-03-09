@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#full">full</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#isFull">isFull</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#pushUnlessFull">pushUnlessFull</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#full">full</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#isFull">isFull</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#pushUnlessFull">pushUnlessFull</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#optionsSchema">optionsSchema</a></span></li>
 </nav>
 
 <div id="main">
@@ -60,7 +60,7 @@
 <h2>Installation</h2>
 <p><code>npm i --save @goodware/task-queue</code></p>
 <h2>Overview</h2>
-<p>This lightweight, battle-tested, single-dependency (Joi) queue class limits the number of tasks (synchronous or asynchronous) that can execute simultaneously, in order to manage the usage of resources such as memory and database connections. Although other packages address this use case, this is apparently the only one that accepts new tasks post-instantiation without using generators.</p>
+<p>This lightweight, battle-tested, single-dependency (Joi) queue limits the number of tasks (async supported) that can execute simultaneously, in order to manage the usage of resources such as memory and database connections. Although other packages address this use case, this is apparently the only one that accepts new tasks post-instantiation without using generators.</p>
 <h2>Usage</h2>
 <p>A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has only one required property:</p>
 <table>
@@ -77,19 +77,18 @@
 </tr>
 </tbody>
 </table>
-<p>Functions are scheduled for execution via the asynchronous method <code>push()</code>. This method accepts a function and returns a Promise that settles when the provided function is called.</p>
-<p>A common misunderstanding is to think the Promise returned by <code>push()</code> settles when the provided function has finished executing. To wait for the function to finish, use the <code>.promise</code> property of the object returned by <code>push()</code>.</p>
+<p>Functions are queued via the asynchronous method <code>push()</code>. This method accepts a function and returns a Promise that settles when the provided function is called. To wait for the function to finish, use the <code>.promise</code> property of the object returned by <code>push()</code>.</p>
 <p>In summary:</p>
 <ul>
-<li>Create a queue that runs at most 10 simultaneously running tasks: <code>new (require('@goodware/task-queue'))({ size: 10 })</code></li>
-<li><code>await queue.push(() =&gt; {...})</code> waits for the provided function to be called</li>
-<li><code>await (await queue.push(() =&gt; {...})).promise</code> waits for the provided function to finish</li>
+<li>Create a queue that runs at most 10 running tasks: <code>new (require('@goodware/task-queue'))({ size: 10 })</code></li>
+<li>Wait for the provided function to be invoked: <code>await queue.push(() =&gt; {...})</code></li>
+<li>Wait for the provided function to finish: <code>await (await queue.push(() =&gt; {...})).promise</code></li>
 </ul>
 <h3>Example</h3>
 <p>This example runs at most two tasks at a time. It outputs: 2, 1, 4, 3.</p>
 <pre class="prettyprint source lang-js"><code>const queue = new (require('@goodware/task-queue'))({ size: 2 });
 
-// Task #1 : push() returns immediately because the queue is empty. 'await'
+// Task #1 : await push() returns immediately because the queue is empty. 'await'
 // doesn't wait for the task to complete.
 await queue.push(
   () =>
@@ -101,7 +100,7 @@ await queue.push(
     )
 );
 
-// Task #2 : push() returns immediately because the queue has an open slot
+// Task #2 : await push() returns immediately because the queue has an open slot
 await queue.push(
   () =>
     new Promise((resolve) =>
@@ -114,7 +113,7 @@ await queue.push(
 
 // The queue is full. Task #2 will finish in about 300 ms.
 
-// Task #3 : push() waits until task #2 finishes
+// Task #3 : await push() waits until task #2 finishes
 await queue.push(
   () =>
     new Promise((resolve) =>
@@ -128,7 +127,7 @@ await queue.push(
 // The queue is full again. 300 ms have already passed. Task #1 will
 // terminate in about 100 ms, leaving task #3 in the queue.
 
-// Task #4 : push() waits until task #1 finishes
+// Task #4 : await push() waits until task #1 finishes
 const ret = await queue.push(
   () =>
     new Promise((resolve) =>
@@ -149,21 +148,23 @@ await ret.promise;
 <li>Up to 10 worker functions can execute simultaneously</li>
 <li>When all 10 workers are running, up to 50 tasks can call <code>push()</code></li>
 </ol>
-<p>These constraints can be enforced with two queues: <code>workers</code> and <code>waiters</code>. The <code>workers</code> queue executes tasks as demonstrated in the above example. The <code>waiters</code> queue counts the number of tasks that are waiting when <code>workers</code> is full.</p>
+<p>These constraints can be enforced with two queues: <code>workers</code> and <code>waiters</code>. The <code>workers</code> queue executes tasks as demonstrated in the above example. The <code>waiters</code> queue counts the number of tasks that are waiting when the <code>workers</code> queue is full.</p>
 <h3>Example</h3>
 <pre class="prettyprint source lang-js"><code>const workers = new (require('@goodware/task-queue'))({ size: 10 });
 const waiters = new (require('@goodware/task-queue'))({ size: 50 });
 
-// This is the most basic implementation of backpressure 
-if (waiters.full()) throw Error('Not ready');
+// This is the most basic implementation of backpressure
+if (waiters.full()) throw Error('Busy');
 
-// 'await's are intentionally omitted. They are unnecessary for this example.
+// await is intentionally omitted. They are unnecessary for this example.
 waiters.push(() => {
   // Perform some set-up tasks here, if needed
   // The waiters queue is used again to avoid race conditions that could allow more than 50 waiters
-  waiters.push(() => workers.push(() => {
-    // Do the work
-  }));
+  waiters.push(() =>
+    workers.push(() => {
+      // Do the work
+    })
+  );
 });
 </code></pre></article>
     </section>
@@ -178,7 +179,7 @@ waiters.push(() => {
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Sun Mar 07 2021 21:18:29 GMT-0800 (Pacific Standard Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Mon Mar 08 2021 20:43:47 GMT-0800 (Pacific Standard Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
