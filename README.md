@@ -5,6 +5,7 @@
 - [npm](https://www.npmjs.com/package/@goodware/task-queue)
 - [git](https://github.com/good-ware/js-task-queue)
 - [API](https://good-ware.github.io/js-task-queue/)
+- [Releases](tutorial/releases.md)
 
 ## Requirements
 
@@ -22,11 +23,12 @@ This lightweight, battle-tested, single-dependency (Joi) queue limits the number
 
 A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has only one required property:
 
-| Name   | Description                                                  |
-| ------ | ------------------------------------------------------------ |
-| `size` | The maximum number of tasks that can execute simultaneously. |
+| Name      | Description                                                              |
+| --------- | ------------------------------------------------------------------------ |
+| `size`    | The size of the queue                                                    |
+| `workers` | The number of tasks that can execute simultaneously. Defaults to `size.` |
 
-Functions are queued via the asynchronous method `push()`. This method accepts a function and returns a Promise that settles when the provided function is called. To wait for the function to finish, use the `.promise` property of the object returned by `push()`.
+Functions are queued via the asynchronous method `push()`. This method accepts a function named `task.` `push()` returns a Promise that resolves to an object when `task()` is called. `task()` will not be called immediately when the queue is full. `task` does not need to return a Promise, but if it does, it can be acquired via the `promise` property of the object returned by `push().`
 
 In summary:
 
@@ -96,6 +98,15 @@ await ret.promise;
 ```
 
 ## Advanced Usage
+
+Consider the following constraints:
+
+1. Up to 10 worker functions can execute simultaneously
+2. When all 10 workers are running, up to 40 tasks can call `await push()` without waiting for a worker task to finish
+
+These constraints can be enforced by setting `size` to 50 and `workers` to 10.
+
+## Backpressure
 
 `push()` returns a new Promise each time it is called, thus consuming memory. Depending on your application, it may be necessary to limit calls to `push()` when the queue is full.
 

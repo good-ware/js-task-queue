@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#full">full</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#isFull">isFull</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#pushUnlessFull">pushUnlessFull</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#optionsSchema">optionsSchema</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-releases.html">releases</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#full">full</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#isFull">isFull</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#pushUnlessFull">pushUnlessFull</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#optionsSchema">optionsSchema</a></span></li>
 </nav>
 
 <div id="main">
@@ -54,6 +54,7 @@
 <li><a href="https://www.npmjs.com/package/@goodware/task-queue">npm</a></li>
 <li><a href="https://github.com/good-ware/js-task-queue">git</a></li>
 <li><a href="https://good-ware.github.io/js-task-queue/">API</a></li>
+<li><a href="tutorial/releases.md">Releases</a></li>
 </ul>
 <h2>Requirements</h2>
 <p>ECMAScript 2017</p>
@@ -73,11 +74,15 @@
 <tbody>
 <tr>
 <td><code>size</code></td>
-<td>The maximum number of tasks that can execute simultaneously.</td>
+<td>The size of the queue</td>
+</tr>
+<tr>
+<td><code>workers</code></td>
+<td>The number of tasks that can execute simultaneously. Defaults to <code>size.</code></td>
 </tr>
 </tbody>
 </table>
-<p>Functions are queued via the asynchronous method <code>push()</code>. This method accepts a function and returns a Promise that settles when the provided function is called. To wait for the function to finish, use the <code>.promise</code> property of the object returned by <code>push()</code>.</p>
+<p>Functions are queued via the asynchronous method <code>push()</code>. This method accepts a function named <code>task.</code> <code>push()</code> returns a Promise that resolves to an object when <code>task()</code> is called. <code>task()</code> will not be called immediately when the queue is full. <code>task</code> does not need to return a Promise, but if it does, it can be acquired via the <code>promise</code> property of the object returned by <code>push().</code></p>
 <p>In summary:</p>
 <ul>
 <li>Create a queue that runs at most 10 running tasks: <code>new (require('@goodware/task-queue'))({ size: 10 })</code></li>
@@ -142,6 +147,13 @@ const ret = await queue.push(
 await ret.promise;
 </code></pre>
 <h2>Advanced Usage</h2>
+<p>Consider the following constraints:</p>
+<ol>
+<li>Up to 10 worker functions can execute simultaneously</li>
+<li>When all 10 workers are running, up to 40 tasks can call <code>await push()</code> without waiting for a worker task to finish</li>
+</ol>
+<p>These constraints can be enforced by setting <code>size</code> to 50 and <code>workers</code> to 10.</p>
+<h2>Backpressure</h2>
 <p><code>push()</code> returns a new Promise each time it is called, thus consuming memory. Depending on your application, it may be necessary to limit calls to <code>push()</code> when the queue is full.</p>
 <p>For example, consider the following constraints:</p>
 <ol>
@@ -179,7 +191,7 @@ waiters.push(() => {
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Mon Mar 08 2021 20:43:47 GMT-0800 (Pacific Standard Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Mon May 03 2021 01:59:19 GMT-0700 (Pacific Daylight Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

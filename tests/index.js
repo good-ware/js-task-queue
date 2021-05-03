@@ -43,7 +43,7 @@ async function test2() {
  */
 async function test3() {
   const queue = new TaskQueue({ size: 2 });
-  await queue.push(() => new Promise((resolve) => setTimeout(() => resolve(), 100)));
+  await queue.push(() => new Promise((resolve) => setTimeout(resolve, 100)));
   await queue.wait();
 }
 
@@ -53,8 +53,44 @@ async function test3() {
  */
 async function test4() {
   const queue = new TaskQueue({ size: 2 });
-  await queue.push(() => new Promise((resolve) => setTimeout(() => resolve(), 100)));
+  await queue.push(() => new Promise((resolve) => setTimeout(resolve, 100)));
   await queue.stop();
+}
+
+/**
+ * @description Test workers < size
+ * @return {Promise}
+ */
+async function test5() {
+  console.log(`test5> ${new Date()}`);
+  const queue = new TaskQueue({ size: 3, workers: 1 });
+
+  await queue.push(() => new Promise((resolve) => setTimeout(resolve, 2000)));
+  const ret = await queue.push(
+    () =>
+      new Promise((resolve) =>
+        setTimeout(() => {
+          resolve(5);
+        }, 2000)
+      )
+  );
+  console.log(`test5> I run immediately ${new Date()}`);
+  await queue.push(() => new Promise((resolve) => setTimeout(resolve, 2000)));
+  console.log(`test5> I run immediately ${new Date()}`);
+
+  ret.promise.then((value) => {
+    if (value !== 5) throw new Error('failed');
+    console.log(`test5> 4 seconds later ... ${value} === 5 ${new Date()}`);
+  });
+
+  const ret2 = await queue.push(() => new Promise((resolve) => setTimeout(resolve, 1000)));
+  console.log(`test5> 6 seconds later ${new Date()}`);
+
+  ret2.promise.then(() => console.log(`test5> 7 seconds later ${new Date()}`));
+
+  await queue.push(() => new Promise((resolve) => setTimeout(resolve, 1000)));
+  await queue.stop();
+  console.log(`test5> 8 seconds later ${new Date()}`);
 }
 
 /**
@@ -62,7 +98,7 @@ async function test4() {
  * @return {Promise}
  */
 function go() {
-  return Promise.all([test1(), test2(), test3(), test4()]);
+  return Promise.all([test1(), test2(), test3(), test4(), test5()]);
 }
 
 go().then(() => console.log('Successful'), console.error);

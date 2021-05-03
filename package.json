@@ -1,6 +1,6 @@
 {
   "name": "@goodware/task-queue",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "description": "A lightweight task queue",
   "keywords": [
     "queue",
@@ -11,7 +11,7 @@
     "lint": "eslint . --fix",
     "prettier": "prettier . --write",
     "pub": "npm publish --access=public",
-    "test": "node tests/test.js",
+    "test": "node tests",
     "docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose -R README.md *.js"
   },
   "main": "index.js",

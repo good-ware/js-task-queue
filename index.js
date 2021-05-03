@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 const Joi = require('joi');
 
@@ -6,11 +7,11 @@ const Joi = require('joi');
  */
 const optionsSchema = Joi.object({
   name: Joi.string().description('The name of the queue. It is logged.'),
-  size: Joi.number()
+  size: Joi.number().integer().min(1).required().description('The size of the queue'),
+  workers: Joi.number()
     .integer()
     .min(1)
-    .required()
-    .description('The maximum number of simultaneous tasks that can execute'),
+    .description('The maximum number of tasks that can execute simultaneously. Defaults to size.'),
   logger: Joi.object(),
 });
 
@@ -28,6 +29,7 @@ class TaskQueue {
    *  {Object} logger
    *  {Integer} taskCount The number of currently executing tasks
    *  {Function[]} resolvers
+   *  {Function[]} waiters
    */
   /**
    * @description Constructor. There is no need to call start() after creating a new object.
@@ -40,10 +42,13 @@ class TaskQueue {
 
     Object.assign(this, validation.value);
 
+    if (!this.workers) this.workers = this.size;
+
     if (this.logger && !this.logger.isLevelEnabled(logTag)) delete this.logger;
 
     this.taskCount = 0;
     this.resolvers = [];
+    this.waiters = [];
   }
 
   /**
@@ -74,17 +79,45 @@ class TaskQueue {
       this.taskCount = newTasks;
     }
 
-    // Invoke resolve() for all waiters. This is a while loop because of wait()
-    while (this.resolvers.length) this.resolvers.shift()();
+    // Release the next waiter
+    // This can cause reentrancy
+    if (this.resolvers.length) this.resolvers.shift()();
+
+    // Notify waiters
+    if (!this.taskCount) {
+      const { waiters } = this;
+      if (waiters.length) {
+        this.waiters = [];
+        waiters.forEach((resolve) => resolve());
+      }
+    }
+  }
+
+  /**
+   * @private
+   * @ignore
+   * @description Queues a task when a task completes. push() has been called previously but the queue was full.
+   * @param {function} task The task provided to an earlier call to push()
+   * @param {function} resolve Belongs to push().promise
+   * @param {function} reject Belongs to push().promise
+   * @return See push()
+   */
+  route(task, resolve, reject) {
+    this.push(task).then((ret) => {
+      // ret.promise is for the actual task
+      ret.promise.then(resolve, reject);
+    });
   }
 
   /**
    * @description Starts a task. If the queue's maximum size has been reached, this method waits for a task to finish
    *  before invoking task().
    * @param {Function} task A function to call. It can return a Promise, throw an exception, or return a value.
-   * @return {Promise} Resolves to an object with the property 'promise' containing either the Promise returned by task
-   *  or a new Promise that resolves to the value returned by task or rejects using the exception thrown by it.
-   *  Therefore, it is not only possible to wait for the task to start, it is also possible to wait for it to finish.
+   * @return {Promise} Does not reject. Resolves to an object with the property 'promise'
+   *  containing either the Promise returned by task or a new Promise that resolves to the value returned by task or
+   *  rejects using the exception thrown by it. Therefore, it is not only possible to wait for the task to start, it is
+   *  also possible to wait for it to finish.
+   *
    *  For example:
    *  // Wait for an open slot in the queue
    *  const ret = await queue.push(()=>new Promise(resolve=>setTimeout(()=>resolve('Hello'), 5000)));
@@ -94,7 +127,17 @@ class TaskQueue {
   async push(task) {
     // Wait for an available slot in the queue
     // eslint-disable-next-line no-await-in-loop
-    while (this.taskCount >= this.size) await new Promise((resolve) => this.resolvers.push(resolve));
+    for (;;) {
+      if (this.taskCount < this.workers) break;
+      if (this.resolvers.length + this.taskCount >= this.size) {
+        await new Promise((resolve) => this.resolvers.push(resolve));
+      } else {
+        const promise = new Promise((resolve, reject) => {
+          this.resolvers.push(() => this.route(task, resolve, reject));
+        });
+        return { promise };
+      }
+    }
 
     let fret;
     let err;
@@ -147,7 +190,7 @@ class TaskQueue {
    * @return {Boolean} true if the maximum number of tasks are queued
    */
   full() {
-    return this.taskCount >= this.size;
+    return this.taskCount >= this.workers;
   }
 
   /**
@@ -166,7 +209,7 @@ class TaskQueue {
    * @return {Promise}
    */
   pushUnlessFull(task) {
-    if (this.taskCount >= this.size) return false;
+    if (this.taskCount >= this.workers) return false;
     return this.push(task);
   }
 
@@ -177,7 +220,7 @@ class TaskQueue {
    */
   async wait() {
     // eslint-disable-next-line no-await-in-loop
-    while (this.taskCount) await new Promise((resolve) => this.resolvers.push(resolve));
+    if (this.taskCount) await new Promise((resolve) => this.waiters.push(resolve));
   }
 
   /**
