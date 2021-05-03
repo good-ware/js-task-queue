@@ -106,34 +106,34 @@ Consider the following constraints:
 
 These constraints can be enforced by setting `size` to 50 and `workers` to 10.
 
-## Backpressure
+## Minimizing Memory Usage
 
-`push()` returns a new Promise each time it is called, thus consuming memory. Depending on your application, it may be necessary to limit calls to `push()` when the queue is full.
+`push()` returns a new Promise each time it is called, thus consuming memory. Depending on your application, it may be necessary to limit calls to `push()` when the queue is full if you are unable to control the number of calls to `push().`
 
 For example, consider the following constraints:
 
-1. Up to 10 worker functions can execute simultaneously
-2. When all 10 workers are running, up to 50 tasks can call `push()`
+1. Up to 10 workers can execute at the same time
+2. When 10 workers are running, up to 50 tasks can call `push()` and immediately continue their work. Subsequent callers will wait until a worker has finished.
 
-These constraints can be enforced with two queues: `workers` and `waiters`. The `workers` queue executes tasks as demonstrated in the above example. The `waiters` queue counts the number of tasks that are waiting when the `workers` queue is full.
+Although it appears that resources are properly constrained in this scenario, if `push()` is called, say, 1,000 times a second, and the workers take longer than 1 second each, the process will likely run out of memory. One solution to this scenario is backpressure.
 
+No form of backpressure is a silver bullet. An external system must handle errors and retry.
+ 
 ### Example
 
 ```js
-const workers = new (require('@goodware/task-queue'))({ size: 10 });
-const waiters = new (require('@goodware/task-queue'))({ size: 50 });
+const queue = new (require('@goodware/task-queue'))({ size: 50, workers: 10 });
 
-// This is the most basic implementation of backpressure
-if (waiters.full()) throw Error('Busy');
+for (;;) {
+  // ...
+  // The most basic implementation of backpressure
+  if (!queue.full) {
+    await workers.push(async () => {
+      await doWork();
+    });
+  }
+  // ...
+}
 
-// await is intentionally omitted. They are unnecessary for this example.
-waiters.push(() => {
-  // Perform some set-up tasks here, if needed
-  // The waiters queue is used again to avoid race conditions that could allow more than 50 waiters
-  waiters.push(() =>
-    workers.push(() => {
-      // Do the work
-    })
-  );
-});
+await queue.stop();
 ```

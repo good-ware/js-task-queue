@@ -1,6 +1,15 @@
 # Release History
 
+## 2.0.2 2021-05-03
+
+Documentation only
+
 ## 2.0.1 2021-05-03
+
+Documentation and minor bug fixes
+
+## 2.0.0 2021-05-03
+
 ### Breaking Changes
 
 - full() and isFull() replaced by full
