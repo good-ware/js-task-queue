@@ -19,7 +19,7 @@ Documentation and minor bug fixes
 
 ### New Features
 
-- New option `workers.` Defaults to `size.` Consider `size=3` and `workers=1.` Lines 1-3 in the following example would return immediately even though only one function executes at a time. Line 4, however, would wait until the task in line 1 finishes.
+- New option `workers.` Defaults to `size.` Consider `size=3` and `workers=1.` Lines 1-3 in the following example would return immediately even though only one function executes at a time. Line 4, however, would wait until one of the tasks started by lines 1-3 complete.
 
 ```js
 await queue.push(() => a); // Line 1
