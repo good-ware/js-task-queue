@@ -97,15 +97,6 @@ const ret = await queue.push(
 await ret.promise;
 ```
 
-## Advanced Usage
-
-Consider the following constraints:
-
-1. Up to 10 worker functions can execute simultaneously
-2. When all 10 workers are running, up to 40 tasks can call `await push()` without waiting for a worker task to finish
-
-These constraints can be enforced by setting `size` to 50 and `workers` to 10.
-
 ## Minimizing Memory Usage
 
 `push()` returns a new Promise each time it is called, thus consuming memory. Depending on your application, it may be necessary to limit calls to `push()` when the queue is full if you are unable to control the number of calls to `push().`
@@ -117,7 +108,7 @@ For example, consider the following constraints:
 
 Although it appears that resources are properly constrained in this scenario, if `push()` is called, say, 1,000 times a second, and the workers take longer than 1 second each, the process will likely run out of memory. One solution to this scenario is backpressure.
 
-No form of backpressure is a silver bullet. An external system must handle errors and retry.
+No form of backpressure is a silver bullet. External systems must handle errors and retry.
  
 ### Example
 
