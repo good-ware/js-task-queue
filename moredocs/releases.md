@@ -1,8 +1,11 @@
 # Release History
 
-[Source](https://github.com/palantir/plottable/wiki/Release-Notes-Template)
+## 2.0.0 2021-05-03
 
-## 1.2.0 2021-05-03
+# Breaking Changes
+
+- full() and isFull() replaced by full
+- pushUnlessFull() removed
 
 # New Features
 

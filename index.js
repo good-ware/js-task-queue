@@ -28,8 +28,8 @@ class TaskQueue {
    *  {Boolean} stopped
    *  {Object} logger
    *  {Integer} taskCount The number of currently executing tasks
-   *  {Function[]} resolvers
-   *  {Function[]} waiters
+   *  {Function[]} doneListeners
+   *  {Function[]} waitListeners
    */
   /**
    * @description Constructor. There is no need to call start() after creating a new object.
@@ -47,8 +47,8 @@ class TaskQueue {
     if (this.logger && !this.logger.isLevelEnabled(logTag)) delete this.logger;
 
     this.taskCount = 0;
-    this.resolvers = [];
-    this.waiters = [];
+    this.doneListeners = [];
+    this.waitListeners = [];
   }
 
   /**
@@ -79,34 +79,20 @@ class TaskQueue {
       this.taskCount = newTasks;
     }
 
-    // Release the next waiter
+    // =======================
+    // Fire an event to done()
     // This can cause reentrancy
-    if (this.resolvers.length) this.resolvers.shift()();
+    if (this.doneListeners.length) this.doneListeners.shift()();
 
-    // Notify waiters
+    // =======================
+    // Fire an event to wait()
     if (!this.taskCount) {
-      const { waiters } = this;
-      if (waiters.length) {
-        this.waiters = [];
-        waiters.forEach((resolve) => resolve());
+      const { waitListeners } = this;
+      if (waitListeners.length) {
+        this.waitListeners = [];
+        waitListeners.forEach((resolve) => resolve());
       }
     }
-  }
-
-  /**
-   * @private
-   * @ignore
-   * @description Queues a task when a task completes. push() has been called previously but the queue was full.
-   * @param {function} task The task provided to an earlier call to push()
-   * @param {function} resolve Belongs to push().promise
-   * @param {function} reject Belongs to push().promise
-   * @return See push()
-   */
-  route(task, resolve, reject) {
-    this.push(task).then((ret) => {
-      // ret.promise is for the actual task
-      ret.promise.then(resolve, reject);
-    });
   }
 
   /**
@@ -129,12 +115,19 @@ class TaskQueue {
     // eslint-disable-next-line no-await-in-loop
     for (;;) {
       if (this.taskCount < this.workers) break;
-      if (this.resolvers.length + this.taskCount >= this.size) {
-        await new Promise((resolve) => this.resolvers.push(resolve));
+      if (this.full) {
+        await new Promise((resolve) => this.doneListeners.push(resolve));
       } else {
-        const promise = new Promise((resolve, reject) => {
-          this.resolvers.push(() => this.route(task, resolve, reject));
-        });
+        // =================
+        // The queue is full
+        const promise = new Promise((resolve, reject) =>
+          this.doneListeners.push(() =>
+            this.push(task).then((ret) => {
+              // ret.promise is from the task. Forward to the Promise returned by this method.
+              ret.promise.then(resolve, reject);
+            })
+          )
+        );
         return { promise };
       }
     }
@@ -189,28 +182,8 @@ class TaskQueue {
    * @description Is the queue full?
    * @return {Boolean} true if the maximum number of tasks are queued
    */
-  full() {
-    return this.taskCount >= this.workers;
-  }
-
-  /**
-   * @deprecated By full()
-   * @description Is the queue full?
-   * @return {Boolean} true if the maximum number of tasks are queued
-   */
-  isFull() {
-    return this.full();
-  }
-
-  /**
-   * @description Calls push(task) if the queue has an available slot. If the queue is full, this method returns
-   *  immediately with a falsey value. Otherwise, it returns the same value as the push() method.
-   * @param {Function} task
-   * @return {Promise}
-   */
-  pushUnlessFull(task) {
-    if (this.taskCount >= this.workers) return false;
-    return this.push(task);
+  get full() {
+    return this.taskCount + this.doneListeners.length >= this.size;
   }
 
   /**
@@ -220,7 +193,7 @@ class TaskQueue {
    */
   async wait() {
     // eslint-disable-next-line no-await-in-loop
-    if (this.taskCount) await new Promise((resolve) => this.waiters.push(resolve));
+    if (this.taskCount) await new Promise((resolve) => this.waitListeners.push(resolve));
   }
 
   /**

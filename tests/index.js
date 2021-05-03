@@ -94,11 +94,29 @@ async function test5() {
 }
 
 /**
+ * @description Test full
+ * @return {Promise}
+ */
+async function test6() {
+  const queue = new TaskQueue({ size: 2, workers: 1 });
+  await queue.push(() => new Promise((resolve) => setTimeout(resolve, 100)));
+  if (queue.full) throw new Error('failed');
+  await queue.push(() => new Promise((resolve) => setTimeout(resolve, 100)));
+  if (!queue.full) throw new Error('failed');
+  await queue.stop();
+}
+
+/**
  * @description Runs all tests
  * @return {Promise}
  */
 function go() {
-  return Promise.all([test1(), test2(), test3(), test4(), test5()]);
+  return Promise.all([test1(), test2(), test3(), test4(), test5(), test6()]);
 }
 
-go().then(() => console.log('Successful'), console.error);
+go().then(
+  () => console.log('Successful'),
+  (error) => {
+    console.error(`Failed: ${error}`);
+  }
+);
