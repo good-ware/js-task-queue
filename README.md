@@ -17,26 +17,30 @@ ECMAScript 2017
 
 ## Overview
 
-This lightweight, battle-tested, single-dependency (Joi) queue limits the number of tasks (async supported) that can execute simultaneously, in order to manage the usage of resources such as memory and database connections. Although other packages address this use case, this is apparently the only one that accepts new tasks post-instantiation without using generators.
+This lightweight, battle-tested, single-dependency (Joi 17) task queue limits the number of tasks (sychronous or asynchronous) that execute concurrently. The purpose of limiting task execution is to control resource usage such as memory and database connections.
 
-## Usage
+Although several packages address this use case, this is apparently the only library that can queue tasks post-instantiation without using generators.
 
-A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has only one required property:
+## Creation
+
+A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has one required and one optional property:
 
 | Name      | Description                                                              |
 | --------- | ------------------------------------------------------------------------ |
-| `size`    | The size of the queue                                                    |
+| `size`    | The size of the queue (required)                                         |
 | `workers` | The number of tasks that can execute simultaneously. Defaults to `size.` |
 
-Functions are queued via the asynchronous method `push()`. This method accepts a function named `task.` `push()` returns a Promise that resolves to an object when `task()` is called. `task()` will not be called immediately when the queue is full. `task` does not need to return a Promise, but if it does, it can be acquired via the `promise` property of the object returned by `push().`
+## Usage
 
-In summary:
+Functions are queued via the asynchronous method `push(task)`. This method accepts a function named `task` and returns a Promise that resolves to an object when the `task` function is called (*not* when `task` returns). `task` is called only when a worker is available. `task` does not need to return a Promise, but if it does, it can be acquired via the `promise` property of the object returned by `push().`
+
+### Brief Example
 
 - Create a queue that runs at most 10 running tasks: `new (require('@goodware/task-queue'))({ size: 10 })`
 - Wait for the provided function to be invoked: `await queue.push(() => {...})`
 - Wait for the provided function to finish: `await (await queue.push(() => {...})).promise`
 
-### Example
+### Code Sample
 
 This example runs at most two tasks at a time. It outputs: 2, 1, 4, 3.
 
@@ -110,7 +114,7 @@ Although it appears that resources are properly constrained in this scenario, if
 
 No form of backpressure is a silver bullet. External systems must handle errors and retry.
  
-### Example
+### Code Sample
 
 ```js
 const queue = new (require('@goodware/task-queue'))({ size: 50, workers: 10 });
