@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-releases.html">releases</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#optionsSchema">optionsSchema</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-Releases.html">Releases</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#optionsSchema">optionsSchema</a></span></li>
 </nav>
 
 <div id="main">
@@ -51,19 +51,20 @@
         <article><h1>@goodware/task-queue: A lightweight task queue</h1>
 <h2>Links</h2>
 <ul>
+<li><a href="https://good-ware.github.io/js-task-queue/tutorial-Releases">Release History</a></li>
 <li><a href="https://www.npmjs.com/package/@goodware/task-queue">npm</a></li>
 <li><a href="https://github.com/good-ware/js-task-queue">git</a></li>
 <li><a href="https://good-ware.github.io/js-task-queue/">API</a></li>
-<li><a href="tutorial/releases.md">Releases</a></li>
 </ul>
 <h2>Requirements</h2>
-<p>ECMAScript 2017</p>
+<p>NodeJS 8+</p>
 <h2>Installation</h2>
 <p><code>npm i --save @goodware/task-queue</code></p>
 <h2>Overview</h2>
-<p>This lightweight, battle-tested, single-dependency (Joi) queue limits the number of tasks (async supported) that can execute simultaneously, in order to manage the usage of resources such as memory and database connections. Although other packages address this use case, this is apparently the only one that accepts new tasks post-instantiation without using generators.</p>
-<h2>Usage</h2>
-<p>A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has only one required property:</p>
+<p>This lightweight, battle-tested, single-dependency (Joi 17) task queue limits the number of tasks (sychronous or asynchronous) that execute concurrently. The purpose of limiting task execution is to control resource usage such as memory and database connections.</p>
+<p>Although several packages address this use case, this is apparently the only library that can queue tasks post-instantiation without using generators.</p>
+<h2>Creation</h2>
+<p>A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has one required and one optional property:</p>
 <table>
 <thead>
 <tr>
@@ -74,7 +75,7 @@
 <tbody>
 <tr>
 <td><code>size</code></td>
-<td>The size of the queue</td>
+<td>The size of the queue (required)</td>
 </tr>
 <tr>
 <td><code>workers</code></td>
@@ -82,14 +83,15 @@
 </tr>
 </tbody>
 </table>
-<p>Functions are queued via the asynchronous method <code>push()</code>. This method accepts a function named <code>task.</code> <code>push()</code> returns a Promise that resolves to an object when <code>task()</code> is called. <code>task()</code> will not be called immediately when the queue is full. <code>task</code> does not need to return a Promise, but if it does, it can be acquired via the <code>promise</code> property of the object returned by <code>push().</code></p>
-<p>In summary:</p>
+<h2>Usage</h2>
+<p>Functions are queued via the asynchronous method <code>push(task)</code>. This method accepts a function named <code>task</code> and returns a Promise that resolves to an object when the <code>task</code> function is called (<em>not</em> when <code>task</code> returns). <code>task</code> is called only when a worker is available. <code>task</code> does not need to return a Promise, but if it does, it can be acquired via the <code>promise</code> property of the object returned by <code>push().</code></p>
+<h3>Brief Example</h3>
 <ul>
 <li>Create a queue that runs at most 10 running tasks: <code>new (require('@goodware/task-queue'))({ size: 10 })</code></li>
 <li>Wait for the provided function to be invoked: <code>await queue.push(() =&gt; {...})</code></li>
 <li>Wait for the provided function to finish: <code>await (await queue.push(() =&gt; {...})).promise</code></li>
 </ul>
-<h3>Example</h3>
+<h3>Code Sample</h3>
 <p>This example runs at most two tasks at a time. It outputs: 2, 1, 4, 3.</p>
 <pre class="prettyprint source lang-js"><code>const queue = new (require('@goodware/task-queue'))({ size: 2 });
 
@@ -146,13 +148,6 @@ const ret = await queue.push(
 // Wait for task #4 to finish
 await ret.promise;
 </code></pre>
-<h2>Advanced Usage</h2>
-<p>Consider the following constraints:</p>
-<ol>
-<li>Up to 10 worker functions can execute simultaneously</li>
-<li>When all 10 workers are running, up to 40 tasks can call <code>await push()</code> without waiting for a worker task to finish</li>
-</ol>
-<p>These constraints can be enforced by setting <code>size</code> to 50 and <code>workers</code> to 10.</p>
 <h2>Minimizing Memory Usage</h2>
 <p><code>push()</code> returns a new Promise each time it is called, thus consuming memory. Depending on your application, it may be necessary to limit calls to <code>push()</code> when the queue is full if you are unable to control the number of calls to <code>push().</code></p>
 <p>For example, consider the following constraints:</p>
@@ -161,8 +156,8 @@ await ret.promise;
 <li>When 10 workers are running, up to 50 tasks can call <code>push()</code> and immediately continue their work. Subsequent callers will wait until a worker has finished.</li>
 </ol>
 <p>Although it appears that resources are properly constrained in this scenario, if <code>push()</code> is called, say, 1,000 times a second, and the workers take longer than 1 second each, the process will likely run out of memory. One solution to this scenario is backpressure.</p>
-<p>No form of backpressure is a silver bullet. An external system must handle errors and retry.</p>
-<h3>Example</h3>
+<p>No form of backpressure is a silver bullet. External systems must handle errors and retry.</p>
+<h3>Code Sample</h3>
 <pre class="prettyprint source lang-js"><code>const queue = new (require('@goodware/task-queue'))({ size: 50, workers: 10 });
 
 for (;;) {
@@ -190,7 +185,7 @@ await queue.stop();
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.6</a> on Mon May 03 2021 15:29:29 GMT-0700 (Pacific Daylight Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Mon Jun 07 2021 08:12:13 GMT-0700 (Pacific Daylight Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

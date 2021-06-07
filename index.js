@@ -7,7 +7,11 @@ const Joi = require('joi');
  */
 const optionsSchema = Joi.object({
   name: Joi.string().description('The name of the queue. It is logged.'),
-  size: Joi.number().integer().min(1).required().description('The size of the queue'),
+  size: Joi.number()
+    .integer()
+    .min(1)
+    .required()
+    .description(`push() resolves when the task queue's length is less than this value`),
   workers: Joi.number()
     .integer()
     .min(1)

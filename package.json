@@ -1,6 +1,6 @@
 {
   "name": "@goodware/task-queue",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A lightweight task queue",
   "keywords": [
     "queue",
@@ -21,15 +21,15 @@
   },
   "license": "BSD-2-Clause",
   "dependencies": {
-    "joi": "^17.0.0"
+    "joi": "^17.4.0"
   },
   "devDependencies": {
-    "eslint": "^7.21.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-import": "^2.22.1",
-    "jsdoc": "^3.6.6",
-    "minami": "^1.2.3",
-    "prettier": "^2.2.1"
+    "eslint": "*",
+    "eslint-config-airbnb-base": "*",
+    "eslint-config-prettier": "*",
+    "eslint-plugin-import": "*",
+    "jsdoc": "*",
+    "minami": "*",
+    "prettier": "*"
   }
 }

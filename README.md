@@ -2,14 +2,14 @@
 
 ## Links
 
+- [Release History](https://good-ware.github.io/js-task-queue/tutorial-Releases)
 - [npm](https://www.npmjs.com/package/@goodware/task-queue)
 - [git](https://github.com/good-ware/js-task-queue)
 - [API](https://good-ware.github.io/js-task-queue/)
-- [Releases](tutorial/releases.md)
 
 ## Requirements
 
-ECMAScript 2017
+NodeJS 8+
 
 ## Installation
 
@@ -32,7 +32,7 @@ A task-queue object is instantiated by providing a configuration object to the c
 
 ## Usage
 
-Functions are queued via the asynchronous method `push(task)`. This method accepts a function named `task` and returns a Promise that resolves to an object when the `task` function is called (*not* when `task` returns). `task` is called only when a worker is available. `task` does not need to return a Promise, but if it does, it can be acquired via the `promise` property of the object returned by `push().`
+Functions are queued via the asynchronous method `push(task)`. This method accepts a function named `task` and returns a Promise that resolves to an object when the `task` function is called (_not_ when `task` returns). `task` is called only when a worker is available. `task` does not need to return a Promise, but if it does, it can be acquired via the `promise` property of the object returned by `push().`
 
 ### Brief Example
 
@@ -113,7 +113,7 @@ For example, consider the following constraints:
 Although it appears that resources are properly constrained in this scenario, if `push()` is called, say, 1,000 times a second, and the workers take longer than 1 second each, the process will likely run out of memory. One solution to this scenario is backpressure.
 
 No form of backpressure is a silver bullet. External systems must handle errors and retry.
- 
+
 ### Code Sample
 
 ```js
