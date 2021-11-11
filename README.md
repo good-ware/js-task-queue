@@ -42,7 +42,8 @@ new (require('@goodware/task-queue'))({ size: 10 });
 ```
 - Wait for the provided function to be invoked: 
 ```js
-await queue.push(() => {...})```
+await queue.push(() => {...})
+```
 - Wait for the provided function to finish:
 ```js
 await (await queue.push(() => {...})).promise;
