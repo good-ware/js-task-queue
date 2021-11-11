@@ -36,10 +36,17 @@ Functions are queued via the asynchronous method `push(task)`. This method accep
 
 ### Brief Example
 
-- Create a queue that runs at most 10 running tasks: 
-`new (require('@goodware/task-queue'))({ size: 10 })`
-- Wait for the provided function to be invoked: `await queue.push(() => {...})`
-- Wait for the provided function to finish: `await (await queue.push(() => {...})).promise`
+- Create a queue that runs at most 10 running tasks
+```js
+new (require('@goodware/task-queue'))({ size: 10 });
+```
+- Wait for the provided function to be invoked: 
+```js
+await queue.push(() => {...})```
+- Wait for the provided function to finish:
+```js
+await (await queue.push(() => {...})).promise;
+```
 
 ### Code Sample
 
