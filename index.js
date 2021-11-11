@@ -158,7 +158,7 @@ class TaskQueue {
 
     let promise;
 
-    if (fret instanceof Promise) {
+    if (fret && Object.prototype.toString.call(fret) === "[object Promise]") {
       promise = new Promise((resolve, reject) => {
         fret.then(
           (value) => {

@@ -1,4 +1,8 @@
-## 2.0.3 2020-06-07
+## 2.0.4 2021-11-07
+
+Fix [#16](https://github.com/good-ware/js-task-queue/issues/16)
+
+## 2.0.3 2021-06-07
 
 Update docs
 
