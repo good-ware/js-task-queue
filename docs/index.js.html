@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-Releases.html">Releases</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#optionsSchema">optionsSchema</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-Releases.html">Releases</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#logTag">logTag</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#optionsSchema">optionsSchema</a></span></li>
 </nav>
 
 <div id="main">
@@ -39,7 +39,8 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/* eslint-disable no-await-in-loop */
+            <pre class="prettyprint source linenums"><code>/* eslint-disable no-promise-executor-return */
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 const Joi = require('joi');
 
@@ -51,7 +52,6 @@ const optionsSchema = Joi.object({
   size: Joi.number()
     .integer()
     .min(1)
-    .required()
     .description(`push() resolves when the task queue's length is less than this value`),
   workers: Joi.number()
     .integer()
@@ -60,6 +60,9 @@ const optionsSchema = Joi.object({
   logger: Joi.object(),
 });
 
+/**
+ * All log entries use this tag
+ */
 const logTag = 'taskQueue';
 
 /**
@@ -69,17 +72,17 @@ const logTag = 'taskQueue';
 class TaskQueue {
   /**
    * Properties:
-   *  {Boolean} stopping
-   *  {Boolean} stopped
-   *  {Object} logger
-   *  {Integer} taskCount The number of currently executing tasks
-   *  {Function[]} doneListeners
-   *  {Function[]} waitListeners
+   *  {boolean} stopping
+   *  {boolean} stopped
+   *  {object} logger
+   *  {number} taskCount The number of currently executing tasks
+   *  {function[]} doneListeners
+   *  {function[]} waitListeners
    */
   /**
    * @description Constructor. There is no need to call start() after creating a new object.
-   * @param {Object} options
-   * @param {Integer} options.size The maximum number of functions that can execute at a time
+   * @param {object} options
+   * @param {number} options.size The maximum number of functions that can execute at a time
    */
   constructor(options) {
     const validation = optionsSchema.validate(options);
@@ -87,7 +90,10 @@ class TaskQueue {
 
     Object.assign(this, validation.value);
 
-    if (!this.workers) this.workers = this.size;
+    // eslint-disable-next-line no-multi-assign
+    if (!this.workers &amp;&amp; !this.size) this.workers = this.size = 1;
+    else if (!this.workers) this.workers = this.size;
+    else if (!this.size) this.size = this.workers;
 
     if (this.logger &amp;&amp; !this.logger.isLevelEnabled(logTag)) delete this.logger;
 
@@ -199,7 +205,7 @@ class TaskQueue {
 
     let promise;
 
-    if (fret &amp;&amp; Object.prototype.toString.call(fret) === "[object Promise]") {
+    if (fret &amp;&amp; Object.prototype.toString.call(fret) === '[object Promise]') {
       promise = new Promise((resolve, reject) => {
         fret.then(
           (value) => {
@@ -225,7 +231,7 @@ class TaskQueue {
 
   /**
    * @description Is the queue full?
-   * @return {Boolean} true if the maximum number of tasks are queued
+   * @return {boolean} true if the maximum number of tasks are queued
    */
   get full() {
     return this.taskCount + this.doneListeners.length >= this.size;
@@ -274,7 +280,7 @@ module.exports = TaskQueue;
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Wed Nov 10 2021 19:27:52 GMT-0800 (Pacific Standard Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Fri Nov 26 2021 14:20:03 GMT-0800 (Pacific Standard Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

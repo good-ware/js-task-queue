@@ -1,3 +1,4 @@
+/* eslint-disable no-promise-executor-return */
 /* eslint-disable no-console */
 
 // This script outputs (roughly): Task 2, Task 1, Task 4, Task 3

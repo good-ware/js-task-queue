@@ -17,18 +17,20 @@ NodeJS 8+
 
 ## Overview
 
-This lightweight, battle-tested, single-dependency (Joi 17) task queue limits the number of tasks (sychronous or asynchronous) that execute concurrently. The purpose of limiting task execution is to control resource usage such as memory and database connections.
+This lightweight, battle-tested, single-dependency (joi) task queue limits the number of tasks (synchronous or asynchronous) that execute concurrently. The purpose of limiting task execution is to control resource usage such as memory and database connections.
 
-Although several packages address this use case, this is apparently the only library that can queue tasks post-instantiation without using generators.
+Although several packages address this use case, this is apparently the only library that can queue tasks post-instantiation without using generators. The API is, most of all, easy to learn and use.
 
 ## Creation
 
 A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has one required and one optional property:
 
-| Name      | Description                                                              |
-| --------- | ------------------------------------------------------------------------ |
-| `size`    | The size of the queue (required)                                         |
-| `workers` | The number of tasks that can execute simultaneously. Defaults to `size.` |
+| Name      | Description                                         |
+| --------- | --------------------------------------------------- |
+| `size`    | The size of the queue                               |
+| `workers` | The number of tasks that can execute simultaneously |
+
+size can be provided without workers. workers can provided without size.
 
 ## Usage
 
@@ -37,14 +39,19 @@ Functions are queued via the asynchronous method `push(task)`. This method accep
 ### Brief Example
 
 - Create a queue that runs at most 10 running tasks
+
 ```js
 new (require('@goodware/task-queue'))({ size: 10 });
 ```
-- Wait for the provided function to be invoked: 
+
+- Wait for the provided function to be invoked:
+
 ```js
 await queue.push(() => {...})
 ```
+
 - Wait for the provided function to finish:
+
 ```js
 await (await queue.push(() => {...})).promise;
 ```

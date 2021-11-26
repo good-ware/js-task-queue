@@ -1,3 +1,4 @@
+/* eslint-disable no-promise-executor-return */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 const Joi = require('joi');
@@ -10,7 +11,6 @@ const optionsSchema = Joi.object({
   size: Joi.number()
     .integer()
     .min(1)
-    .required()
     .description(`push() resolves when the task queue's length is less than this value`),
   workers: Joi.number()
     .integer()
@@ -19,6 +19,9 @@ const optionsSchema = Joi.object({
   logger: Joi.object(),
 });
 
+/**
+ * All log entries use this tag
+ */
 const logTag = 'taskQueue';
 
 /**
@@ -28,17 +31,17 @@ const logTag = 'taskQueue';
 class TaskQueue {
   /**
    * Properties:
-   *  {Boolean} stopping
-   *  {Boolean} stopped
-   *  {Object} logger
-   *  {Integer} taskCount The number of currently executing tasks
-   *  {Function[]} doneListeners
-   *  {Function[]} waitListeners
+   *  {boolean} stopping
+   *  {boolean} stopped
+   *  {object} logger
+   *  {number} taskCount The number of currently executing tasks
+   *  {function[]} doneListeners
+   *  {function[]} waitListeners
    */
   /**
    * @description Constructor. There is no need to call start() after creating a new object.
-   * @param {Object} options
-   * @param {Integer} options.size The maximum number of functions that can execute at a time
+   * @param {object} options
+   * @param {number} options.size The maximum number of functions that can execute at a time
    */
   constructor(options) {
     const validation = optionsSchema.validate(options);
@@ -46,7 +49,10 @@ class TaskQueue {
 
     Object.assign(this, validation.value);
 
-    if (!this.workers) this.workers = this.size;
+    // eslint-disable-next-line no-multi-assign
+    if (!this.workers && !this.size) this.workers = this.size = 1;
+    else if (!this.workers) this.workers = this.size;
+    else if (!this.size) this.size = this.workers;
 
     if (this.logger && !this.logger.isLevelEnabled(logTag)) delete this.logger;
 
@@ -158,7 +164,7 @@ class TaskQueue {
 
     let promise;
 
-    if (fret && Object.prototype.toString.call(fret) === "[object Promise]") {
+    if (fret && Object.prototype.toString.call(fret) === '[object Promise]') {
       promise = new Promise((resolve, reject) => {
         fret.then(
           (value) => {
@@ -184,7 +190,7 @@ class TaskQueue {
 
   /**
    * @description Is the queue full?
-   * @return {Boolean} true if the maximum number of tasks are queued
+   * @return {boolean} true if the maximum number of tasks are queued
    */
   get full() {
     return this.taskCount + this.doneListeners.length >= this.size;
