@@ -6,6 +6,7 @@
 - [npm](https://www.npmjs.com/package/@goodware/task-queue)
 - [git](https://github.com/good-ware/js-task-queue)
 - [API](https://good-ware.github.io/js-task-queue/)
+- [RunKit Example](https://runkit.com/dev-guy/61b6680f5888a000084f5b05)
 
 ## Requirements
 
@@ -115,6 +116,8 @@ const ret = await queue.push(
 
 // Wait for task #4 to finish
 await ret.promise;
+
+await queue.stop();
 ```
 
 ## Minimizing Memory Usage
@@ -135,15 +138,17 @@ No form of backpressure is a silver bullet. External systems must handle errors 
 ```js
 const queue = new (require('@goodware/task-queue'))({ size: 50, workers: 10 });
 
+const doWork = () => new Promise((resolve)=>setTimeout(resolve, 100));
+
 for (;;) {
-  // ...
-  // The most basic implementation of backpressure
-  if (!queue.full) {
+  // The most basic implementation of backpressure: wait 50 ms
+  if (queue.full) {
+    await new Promise((resolve)=>setTimeout(resolve, 50));
+  } else {
     await workers.push(async () => {
       await doWork();
     });
   }
-  // ...
 }
 
 await queue.stop();
