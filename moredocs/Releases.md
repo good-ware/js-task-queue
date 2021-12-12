@@ -1,3 +1,7 @@
+## 2.0.8 2021-12-11
+
+Make package smaller by removing docs
+
 ## 2.0.4 2021-11-07
 
 Fix [#16](https://github.com/good-ware/js-task-queue/issues/16)
