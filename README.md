@@ -138,17 +138,23 @@ No form of backpressure is a silver bullet. External systems must handle errors 
 ```js
 const queue = new (require('@goodware/task-queue'))({ size: 50, workers: 10 });
 
-const doWork = () => new Promise((resolve)=>setTimeout(resolve, 100));
+async function doWork() {
+  const me = Date.now();
+  console.log(`${me} begin`);
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  console.log(`${me} end`);
+}
 
-for (;;) {
+for (let i = 1; i <= 100; ++i) {
   // The most basic implementation of backpressure: wait 50 ms
   if (queue.full) {
+    console.log('full');
     await new Promise((resolve)=>setTimeout(resolve, 50));
-  } else {
-    await workers.push(async () => {
-      await doWork();
-    });
-  }
+  }  
+  else {
+    await queue.push(doWork);
+    console.log('queued');
+  }    
 }
 
 await queue.stop();
