@@ -6,7 +6,7 @@
 - [npm](https://www.npmjs.com/package/@goodware/task-queue)
 - [git](https://github.com/good-ware/js-task-queue)
 - [API](https://good-ware.github.io/js-task-queue/)
-- [RunKit Example](https://runkit.com/dev-guy/61b6680f5888a000084f5b05)
+- [RunKit Example](https://runkit.com/dev-guy/exploring-goodware-task-queue)
 
 ## Requirements
 
