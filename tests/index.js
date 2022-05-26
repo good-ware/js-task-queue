@@ -12,6 +12,7 @@ async function test1() {
   const ret = await queue.push(() => new Promise((resolve) => setTimeout(() => resolve(new Date()), 3000)));
   console.log(`Waiting for value ${new Date()}`);
   console.log(`Done waiting for value: ${await ret.promise}`);
+  await queue.stop();
 }
 
 /**
@@ -36,6 +37,7 @@ async function test2() {
   }
 
   if (failed) throw new Error('Failed to throw exception');
+  await queue.stop();
 }
 
 /**
@@ -45,7 +47,7 @@ async function test2() {
 async function test3() {
   const queue = new TaskQueue({ size: 2 });
   await queue.push(() => new Promise((resolve) => setTimeout(resolve, 100)));
-  await queue.wait();
+  await queue.stop();
 }
 
 /**

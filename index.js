@@ -31,7 +31,6 @@ const logTag = 'taskQueue';
 class TaskQueue {
   /**
    * Properties:
-   *  {boolean} stopping
    *  {boolean} stopped
    *  {object} logger
    *  {number} taskCount The number of currently executing tasks
@@ -62,9 +61,9 @@ class TaskQueue {
   }
 
   /**
+   * @description Called when a task finishes
    * @private
    * @ignore
-   * @description Called when a task finishes
    */
   taskFinished() {
     const newTasks = this.taskCount - 1;
@@ -89,15 +88,14 @@ class TaskQueue {
       this.taskCount = newTasks;
     }
 
-    // =======================
-    // Fire an event to done()
-    // This can cause reentrancy
-    if (this.doneListeners.length) this.doneListeners.shift()();
-
-    // =======================
-    // Fire an event to wait()
-    if (!this.taskCount) {
+    const { length: doneListenerCount } = this.doneListeners;
+    // Calling resolve() on a doneListener doesn't cause a new task to be started. this.taskCount is not affected.
+    if (doneListenerCount) {
+      this.doneListeners.shift()();
+    } else if (!newTasks) {
       const { waitListeners } = this;
+      // =========================
+      // Release callers to wait()
       if (waitListeners.length) {
         this.waitListeners = [];
         waitListeners.forEach((resolve) => resolve());
@@ -106,33 +104,27 @@ class TaskQueue {
   }
 
   /**
-   * @description Starts a task. If the queue's maximum size has been reached, this method waits for a task to finish
-   *  before invoking task().
-   * @param {Function} task A function to call. It can return a Promise, throw an exception, or return a value.
-   * @return {Promise} Does not reject. Resolves to an object with the property 'promise'
-   *  containing either the Promise returned by task or a new Promise that resolves to the value returned by task or
-   *  rejects using the exception thrown by it. Therefore, it is not only possible to wait for the task to start, it is
-   *  also possible to wait for it to finish.
-   *
-   *  For example:
-   *  // Wait for an open slot in the queue
-   *  const ret = await queue.push(()=>new Promise(resolve=>setTimeout(()=>resolve('Hello'), 5000)));
-   *  // Wait for 5 seconds and output Hello
-   *  console.log(await ret.promise);
+   * Same as push() without the check for this.stopping
+   * @param {function} task
+   * @returns {Promise}
+   * @private
+   * @ignore
    */
-  async push(task) {
+  async pushInternal(task) {
     // Wait for an available slot in the queue
     // eslint-disable-next-line no-await-in-loop
     for (;;) {
       if (this.taskCount < this.workers) break;
       if (this.full) {
+        // ============
+        // Size reached
         await new Promise((resolve) => this.doneListeners.push(resolve));
       } else {
-        // =================
-        // The queue is full
+        // ===============
+        // Workers reached
         const promise = new Promise((resolve, reject) =>
           this.doneListeners.push(() =>
-            this.push(task).then((ret) => {
+            this.pushInternal(task).then((ret) => {
               // ret.promise is from the task. Forward to the Promise returned by this method.
               ret.promise.then(resolve, reject);
             })
@@ -189,6 +181,26 @@ class TaskQueue {
   }
 
   /**
+   * @description Starts a task. If the queue's maximum size has been reached, this method waits for a task to finish
+   *  before invoking task().
+   * @param {function} task A function to call. It can return a Promise, throw an exception, or return a value.
+   * @return {Promise} Does not reject. Resolves to an object with the property 'promise'
+   *  containing either the Promise returned by task or a new Promise that resolves to the value returned by task or
+   *  rejects using the exception thrown by it. Therefore, it is not only possible to wait for the task to start, it is
+   *  also possible to wait for it to finish.
+   *
+   *  For example:
+   *  // Wait for an open slot in the queue
+   *  const ret = await queue.push(()=>new Promise(resolve=>setTimeout(()=>resolve('Hello'), 5000)));
+   *  // Wait for 5 seconds and output Hello
+   *  console.log(await ret.promise);
+   */
+  push(task) {
+    if (this.stopped) throw new Error('Stopped');
+    return this.pushInternal(task);
+  }
+
+  /**
    * @description Is the queue full?
    * @return {boolean} true if the maximum number of tasks are queued
    */
@@ -210,18 +222,14 @@ class TaskQueue {
    * @description Waits for running tasks to complete. Prevents additional calls to push().
    */
   async stop() {
-    this.stopping = true;
-    await this.wait();
-    this.stopping = false;
     this.stopped = true;
+    await this.wait();
   }
 
   /**
    * @description Undo method for stop(). There is no need to invoke start() after creating a new object.
    */
   start() {
-    if (!this.stopped) return;
-    if (this.stopping) throw new Error('Stopping');
     this.stopped = false;
   }
 }
