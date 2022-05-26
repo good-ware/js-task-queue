@@ -1,3 +1,8 @@
+## 2.1.0 - 2.1.1 2022-05-25
+
+- Fix bug in stopped(). It wasn't stopping.
+- Add StoppedError
+
 ## 2.0.8 2021-12-11
 
 Make package smaller by removing docs
