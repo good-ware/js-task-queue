@@ -19,6 +19,6 @@
     "private": true,
     "recurse": true,
     "template": "./node_modules/minami",
-    "tutorials": "./moredocs"
+    "tutorials": "./changelog"
   }
 }

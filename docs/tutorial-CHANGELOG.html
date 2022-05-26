@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>StoppedError.js - Documentation</title>
+    <title>CHANGELOG - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -29,33 +29,45 @@
 
 <div id="main">
     
-    <h1 class="page-title">StoppedError.js</h1>
+    <h1 class="page-title">CHANGELOG</h1>
     
 
-    
-
-
-
-    
     <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * This class is thrown when push() is called after stop() has been called
- */
-class StoppedError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'StoppedError';
-  }
-}
 
-module.exports = StoppedError;
+<header>
+    
+</header>
+
+<article>
+    <h2>2.0.8 2021-12-11</h2>
+<p>Make package smaller by removing docs</p>
+<h2>2.0.4 2021-11-07</h2>
+<p>Fix <a href="https://github.com/good-ware/js-task-queue/issues/16">#16</a></p>
+<h2>2.0.3 2021-06-07</h2>
+<p>Update docs</p>
+<h2>2.0.2 2021-05-03</h2>
+<p>Update docs</p>
+<h2>2.0.1 2021-05-03</h2>
+<p>Documentation and minor bug fixes</p>
+<h2>2.0.0 2021-05-03</h2>
+<h3>Breaking Changes</h3>
+<ul>
+<li>full() and isFull() replaced by full</li>
+<li>pushUnlessFull() removed</li>
+</ul>
+<h2>1.2.0 2021-05-02</h2>
+<h3>New Features</h3>
+<ul>
+<li>New option <code>workers.</code> Defaults to <code>size.</code> Consider <code>size=3</code> and <code>workers=1.</code> Lines 1-3 in the following example would return immediately even though only one function executes at a time. Line 4, however, would wait until one of the tasks started by lines 1-3 complete.</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>await queue.push(() => a); // Line 1
+await queue.push(() => b); // Line 2
+await queue.push(() => c); // Line 3
+await queue.push(() => c); // Line 4
 </code></pre>
-        </article>
-    </section>
+</article>
 
-
-
+</section>
 
 </div>
 

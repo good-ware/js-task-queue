@@ -21,7 +21,7 @@ npm-debug.log
 coverage
 docs
 logs
-moredocs
+changelog
 node_modules
 tests
 workspace
