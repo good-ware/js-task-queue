@@ -1,6 +1,7 @@
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable no-console */
 const TaskQueue = require('../index');
+const StoppedError = require('../StoppedError')
 
 /**
  * @description Test
@@ -12,6 +13,9 @@ async function test1() {
   const ret = await queue.push(() => new Promise((resolve) => setTimeout(() => resolve(new Date()), 3000)));
   console.log(`Waiting for value ${new Date()}`);
   console.log(`Done waiting for value: ${await ret.promise}`);
+  await queue.stop();
+  await queue.stop();
+  queue.start();
   await queue.stop();
 }
 
@@ -110,11 +114,28 @@ async function test6() {
 }
 
 /**
- * @description Runs all tests
+ * @description Test StoppedError
+ * @return {Promise}
+ */
+async function test7() {
+  const queue = new TaskQueue({ size: 1 });
+  queue.stop();
+  try {
+    await queue.push();
+    throw new Error('failed - no exception');
+  } catch (error) {
+    if (error.name !== 'StoppedError') throw new Error('failed - wrong exception 1');
+    if (!(error instanceof StoppedError)) throw new Error('failed - wrong exception 2');
+  }
+  await queue.stop();
+}
+
+/**
+ * @description Starts all tests
  * @return {Promise}
  */
 function go() {
-  return Promise.all([test1(), test2(), test3(), test4(), test5(), test6()]);
+  return Promise.all([test1(), test2(), test3(), test4(), test5(), test6(), test7()]);
 }
 
 go().then(

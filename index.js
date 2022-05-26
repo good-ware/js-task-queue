@@ -2,6 +2,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 const Joi = require('joi');
+const StoppedError = require('./StoppedError');
 
 /**
  * @description Schema for TaskQueue's constructor options
@@ -21,12 +22,13 @@ const optionsSchema = Joi.object({
 
 /**
  * All log entries use this tag
+ * @ignore
+ * @private
  */
 const logTag = 'taskQueue';
 
 /**
- * @description A queue that enforces a maximum number of simultaneously executing tasks
- * @todo Add events
+ * A queue that enforces a maximum number of simultaneously executing tasks
  */
 class TaskQueue {
   /**
@@ -38,7 +40,7 @@ class TaskQueue {
    *  {function[]} waitListeners
    */
   /**
-   * @description Constructor. There is no need to call start() after creating a new object.
+   * Constructor. There is no need to call start() after creating a new object.
    * @param {object} options
    * @param {number} options.size The maximum number of functions that can execute at a time
    */
@@ -61,7 +63,7 @@ class TaskQueue {
   }
 
   /**
-   * @description Called when a task finishes
+   * Called when a task finishes
    * @private
    * @ignore
    */
@@ -89,7 +91,8 @@ class TaskQueue {
     }
 
     const { length: doneListenerCount } = this.doneListeners;
-    // Calling resolve() on a doneListener doesn't cause a new task to be started. this.taskCount is not affected.
+    // Calling resolve() on a doneListener doesn't cause a new task to be started
+
     if (doneListenerCount) {
       this.doneListeners.shift()();
     } else if (!newTasks) {
@@ -104,9 +107,9 @@ class TaskQueue {
   }
 
   /**
-   * Same as push() without the check for this.stopping
+   * Same as push() but without the check for this.stopping
    * @param {function} task
-   * @returns {Promise}
+   * @return {Promise}
    * @private
    * @ignore
    */
@@ -181,9 +184,10 @@ class TaskQueue {
   }
 
   /**
-   * @description Starts a task. If the queue's maximum size has been reached, this method waits for a task to finish
-   *  before invoking task().
+   * Starts a task. If the queue's maximum size has been reached, this method waits for a task to finish
+   * before invoking task().
    * @param {function} task A function to call. It can return a Promise, throw an exception, or return a value.
+   * @throws {StoppingError} If stop() has been called
    * @return {Promise} Does not reject. Resolves to an object with the property 'promise'
    *  containing either the Promise returned by task or a new Promise that resolves to the value returned by task or
    *  rejects using the exception thrown by it. Therefore, it is not only possible to wait for the task to start, it is
@@ -196,12 +200,12 @@ class TaskQueue {
    *  console.log(await ret.promise);
    */
   push(task) {
-    if (this.stopped) throw new Error('Stopped');
+    if (this.stopped) throw new StoppedError('Stopped');
     return this.pushInternal(task);
   }
 
   /**
-   * @description Is the queue full?
+   * Is the queue full?
    * @return {boolean} true if the maximum number of tasks are queued
    */
   get full() {
@@ -209,25 +213,26 @@ class TaskQueue {
   }
 
   /**
-   * @description Waits for running tasks to complete. Callers are not prevented callers from calling push(); thus
-   *  there is no guarantee that when the returned Promise resolves, the queue will have an available slot.
+   * Waits for running tasks to complete. Callers are not prevented callers from calling push(); thus
+   * there is no guarantee that when the returned Promise resolves, the queue will have an available slot.
    * @return {Promise}
    */
-  async wait() {
+  wait() {
     // eslint-disable-next-line no-await-in-loop
-    if (this.taskCount) await new Promise((resolve) => this.waitListeners.push(resolve));
+    if (this.taskCount) return new Promise((resolve) => this.waitListeners.push(resolve));
+    return undefined;
   }
 
   /**
-   * @description Waits for running tasks to complete. Prevents additional calls to push().
+   * Waits for running tasks to complete. Prevents additional calls to push().
    */
-  async stop() {
+  stop() {
     this.stopped = true;
-    await this.wait();
+    return this.wait();
   }
 
   /**
-   * @description Undo method for stop(). There is no need to invoke start() after creating a new object.
+   * Undo method for stop(). There is no need to invoke start() after creating a new object.
    */
   start() {
     this.stopped = false;

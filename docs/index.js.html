@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-Releases.html">Releases</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#logTag">logTag</a></span></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#optionsSchema">optionsSchema</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-Releases.html">Releases</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="StoppedError.html">StoppedError</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#optionsSchema">optionsSchema</a></span></li>
 </nav>
 
 <div id="main">
@@ -43,6 +43,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 const Joi = require('joi');
+const StoppedError = require('./StoppedError');
 
 /**
  * @description Schema for TaskQueue's constructor options
@@ -62,12 +63,13 @@ const optionsSchema = Joi.object({
 
 /**
  * All log entries use this tag
+ * @ignore
+ * @private
  */
 const logTag = 'taskQueue';
 
 /**
- * @description A queue that enforces a maximum number of simultaneously executing tasks
- * @todo Add events
+ * A queue that enforces a maximum number of simultaneously executing tasks
  */
 class TaskQueue {
   /**
@@ -79,7 +81,7 @@ class TaskQueue {
    *  {function[]} waitListeners
    */
   /**
-   * @description Constructor. There is no need to call start() after creating a new object.
+   * Constructor. There is no need to call start() after creating a new object.
    * @param {object} options
    * @param {number} options.size The maximum number of functions that can execute at a time
    */
@@ -102,7 +104,7 @@ class TaskQueue {
   }
 
   /**
-   * @description Called when a task finishes
+   * Called when a task finishes
    * @private
    * @ignore
    */
@@ -130,7 +132,8 @@ class TaskQueue {
     }
 
     const { length: doneListenerCount } = this.doneListeners;
-    // Calling resolve() on a doneListener doesn't cause a new task to be started. this.taskCount is not affected.
+    // Calling resolve() on a doneListener doesn't cause a new task to be started
+
     if (doneListenerCount) {
       this.doneListeners.shift()();
     } else if (!newTasks) {
@@ -145,9 +148,9 @@ class TaskQueue {
   }
 
   /**
-   * Same as push() without the check for this.stopping
+   * Same as push() but without the check for this.stopping
    * @param {function} task
-   * @returns {Promise}
+   * @return {Promise}
    * @private
    * @ignore
    */
@@ -222,9 +225,10 @@ class TaskQueue {
   }
 
   /**
-   * @description Starts a task. If the queue's maximum size has been reached, this method waits for a task to finish
-   *  before invoking task().
+   * Starts a task. If the queue's maximum size has been reached, this method waits for a task to finish
+   * before invoking task().
    * @param {function} task A function to call. It can return a Promise, throw an exception, or return a value.
+   * @throws {StoppingError} If stop() has been called
    * @return {Promise} Does not reject. Resolves to an object with the property 'promise'
    *  containing either the Promise returned by task or a new Promise that resolves to the value returned by task or
    *  rejects using the exception thrown by it. Therefore, it is not only possible to wait for the task to start, it is
@@ -237,12 +241,12 @@ class TaskQueue {
    *  console.log(await ret.promise);
    */
   push(task) {
-    if (this.stopped) throw new Error('Stopped');
+    if (this.stopped) throw new StoppedError('Stopped');
     return this.pushInternal(task);
   }
 
   /**
-   * @description Is the queue full?
+   * Is the queue full?
    * @return {boolean} true if the maximum number of tasks are queued
    */
   get full() {
@@ -250,25 +254,26 @@ class TaskQueue {
   }
 
   /**
-   * @description Waits for running tasks to complete. Callers are not prevented callers from calling push(); thus
-   *  there is no guarantee that when the returned Promise resolves, the queue will have an available slot.
+   * Waits for running tasks to complete. Callers are not prevented callers from calling push(); thus
+   * there is no guarantee that when the returned Promise resolves, the queue will have an available slot.
    * @return {Promise}
    */
-  async wait() {
+  wait() {
     // eslint-disable-next-line no-await-in-loop
-    if (this.taskCount) await new Promise((resolve) => this.waitListeners.push(resolve));
+    if (this.taskCount) return new Promise((resolve) => this.waitListeners.push(resolve));
+    return undefined;
   }
 
   /**
-   * @description Waits for running tasks to complete. Prevents additional calls to push().
+   * Waits for running tasks to complete. Prevents additional calls to push().
    */
-  async stop() {
+  stop() {
     this.stopped = true;
-    await this.wait();
+    return this.wait();
   }
 
   /**
-   * @description Undo method for stop(). There is no need to invoke start() after creating a new object.
+   * Undo method for stop(). There is no need to invoke start() after creating a new object.
    */
   start() {
     this.stopped = false;
@@ -288,7 +293,7 @@ module.exports = TaskQueue;
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Wed May 25 2022 20:54:16 GMT-0700 (Pacific Daylight Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Wed May 25 2022 21:22:28 GMT-0700 (Pacific Daylight Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
