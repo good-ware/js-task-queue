@@ -2,7 +2,7 @@
 
 ## Links
 
-- [Release History](https://good-ware.github.io/js-task-queue/tutorial-Releases)
+- [Release History](https://good-ware.github.io/js-task-queue/tutorial-CHANGELOG)
 - [npm](https://www.npmjs.com/package/@goodware/task-queue)
 - [git](https://github.com/good-ware/js-task-queue)
 - [API](https://good-ware.github.io/js-task-queue/)
