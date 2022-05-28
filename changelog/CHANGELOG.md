@@ -1,10 +1,10 @@
-## 2.1.2 2022-05-26
+## 2.1.2 - 2.1.3 2022-05-27
 
 Documentation
 
 ## 2.1.0 - 2.1.1 2022-05-25
 
-- Fix bug in stopped(). It wasn't stopping.
+- Fix stop() and wait(). They weren't waiting for all tasks to finish
 - Add StoppedError
 
 ## 2.0.8 2021-12-11
