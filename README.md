@@ -18,7 +18,7 @@ NodeJS 8+
 
 ## Overview
 
-This lightweight, battle-tested, single-dependency (joi) task queue limits the number of tasks (synchronous or asynchronous) that execute concurrently. The purpose of limiting task execution is to control resource usage such as memory and database connections.
+This lightweight, battle-tested, single-dependency ([joi](https://www.npmjs.com/package/joi), unfortunately) task queue limits the number of tasks (synchronous or asynchronous) that execute concurrently. The purpose of limiting task execution is to control resource usage such as memory and database connections. Thus, it's an alternative to `Promise.all()`, `Promise.allSettled()` etc..
 
 Although several packages address this use case, this is apparently the only library that can queue tasks post-instantiation without using generators. The API is, most of all, easy to learn and use.
 
