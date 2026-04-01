@@ -1,6 +1,6 @@
 {
   "name": "@goodware/task-queue",
-  "version": "2.1.3",
+  "version": "3.0.1",
   "description": "A lightweight task queue",
   "keywords": [
     "queue",
@@ -8,21 +8,42 @@
     "concurrent"
   ],
   "scripts": {
-    "lint": "eslint . --fix",
+    "build": "tsc -p tsconfig.json",
+    "lint": "tsc --noEmit -p tsconfig.json",
     "format": "prettier . --write",
+    "prepare": "npm run build",
     "pub": "npm publish --access=public",
-    "test": "node tests",
-    "docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose -R README.md *.js"
+    "test": "npm run build && node dist/tests/index.js",
+    "docs": "npm run build && node_modules/.bin/jsdoc --configure .jsdoc.json --verbose -R README.md dist/src/*.js"
   },
   "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./index.js",
+      "default": "./index.js"
+    },
+    "./StoppedError": {
+      "types": "./StoppedError.d.ts",
+      "require": "./StoppedError.js",
+      "default": "./StoppedError.js"
+    }
+  },
+  "files": [
+    "dist",
+    "index.d.ts",
+    "index.js",
+    "StoppedError.d.ts",
+    "StoppedError.js",
+    "README.md",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/good-ware/js-task-queue"
+    "url": "git+https://github.com/good-ware/js-task-queue.git"
   },
   "license": "BSD-2-Clause",
-  "dependencies": {
-    "joi": "^17.4.0"
-  },
   "devDependencies": {
     "eslint": "*",
     "eslint-config-airbnb-base": "*",
@@ -30,6 +51,7 @@
     "eslint-plugin-import": "*",
     "jsdoc": "*",
     "minami": "*",
-    "prettier": "*"
+    "prettier": "*",
+    "typescript": "^5.8.3"
   }
 }

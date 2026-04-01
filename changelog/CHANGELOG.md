@@ -1,3 +1,7 @@
+## 3.0.0
+
+Typescript release
+
 ## 2.1.2 - 2.1.3 2022-05-27
 
 Documentation

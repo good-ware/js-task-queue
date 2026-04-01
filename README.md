@@ -1,16 +1,18 @@
 # @goodware/task-queue: A lightweight task queue
 
+> Announcement: As of v3.0.0, the latest release is fully written in TypeScript and ships with bundled type declarations.
+
 ## Links
 
 - [Release History](https://good-ware.github.io/js-task-queue/tutorial-CHANGELOG)
 - [npm](https://www.npmjs.com/package/@goodware/task-queue)
 - [git](https://github.com/good-ware/js-task-queue)
 - [API](https://good-ware.github.io/js-task-queue/)
-- [RunKit Example](https://runkit.com/dev-guy/exploring-goodware-task-queue)
 
 ## Requirements
 
-NodeJS 8+
+- NodeJS 8+
+- Typescript 5+
 
 ## Installation
 
@@ -18,20 +20,20 @@ NodeJS 8+
 
 ## Overview
 
-This lightweight, battle-tested, single-dependency ([joi](https://www.npmjs.com/package/joi), unfortunately) task queue limits the number of tasks (synchronous or asynchronous which are of course plain old `Promises`) that execute concurrently. The purpose of limiting task execution is to control resource usage such as memory and database connections. Thus, it's an alternative to `Promise.all()`, `Promise.allSettled()` etc..
+This lightweight, battle-tested task queue limits the number of tasks (synchronous or asynchronous which are of course plain old `Promises`) that execute concurrently. The purpose of limiting task execution is to control resource usage such as memory and database connections. Thus, it's an alternative to `Promise.all()`, `Promise.allSettled()` etc.. TypeScript declarations are bundled.
 
 Although several packages address this use case, this is apparently the only library that can queue tasks post-instantiation without using generators. The API is, most of all, easy to learn and use.
 
 ## Creation
 
-A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has one required and one optional property:
+A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has two optional properties:
 
 | Name      | Description                                         |
 | --------- | --------------------------------------------------- |
 | `size`    | The size of the queue                               |
 | `workers` | The number of tasks that can execute simultaneously |
 
-size can be provided without workers. workers can provided without size.
+`size` can be provided without `workers`. `workers` can be provided without `size`. If both are omitted they default to `1`.
 
 ## Usage
 
@@ -149,12 +151,11 @@ for (let i = 1; i <= 100; ++i) {
   // The most basic implementation of backpressure: wait 50 ms
   if (queue.full) {
     console.log('full');
-    await new Promise((resolve)=>setTimeout(resolve, 50));
-  }  
-  else {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  } else {
     await queue.push(doWork);
     console.log('queued');
-  }    
+  }
 }
 
 await queue.stop();
