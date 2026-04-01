@@ -1,12 +1,13 @@
 # @goodware/task-queue: A lightweight task queue
 
-> Announcement: As of v3.0.0, the latest release is fully written in TypeScript and ships with bundled type declarations.
+As of v3.0.0, the latest release is fully written in TypeScript and ships with bundled type declarations.
 
 ## Links
 
 - [Release History](https://good-ware.github.io/js-task-queue/tutorial-CHANGELOG)
 - [npm](https://www.npmjs.com/package/@goodware/task-queue)
 - [git](https://github.com/good-ware/js-task-queue)
+- [Sample Repository](https://github.com/good-ware/js-task-queue-example)
 - [API](https://good-ware.github.io/js-task-queue/)
 
 ## Requirements
