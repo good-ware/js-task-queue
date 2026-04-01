@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-CHANGELOG.html">CHANGELOG</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="StoppedError.html">StoppedError</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-member">M</span><span class="nav-item-name"><a href="global.html#optionsSchema">optionsSchema</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Tutorials</li><li class="nav-item"><a href="tutorial-CHANGELOG.html">CHANGELOG</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="StoppedError.html">StoppedError</a></span></li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="TaskQueue.html">TaskQueue</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#push">push</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#start">start</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#stop">stop</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="TaskQueue.html#wait">wait</a></span></li>
 </nav>
 
 <div id="main">
@@ -49,23 +49,28 @@
 
     <section class="readme">
         <article><h1>@goodware/task-queue: A lightweight task queue</h1>
+<blockquote>
+<p>Announcement: As of v3.0.0, the latest release is fully written in TypeScript and ships with bundled type declarations.</p>
+</blockquote>
 <h2>Links</h2>
 <ul>
 <li><a href="https://good-ware.github.io/js-task-queue/tutorial-CHANGELOG">Release History</a></li>
 <li><a href="https://www.npmjs.com/package/@goodware/task-queue">npm</a></li>
 <li><a href="https://github.com/good-ware/js-task-queue">git</a></li>
 <li><a href="https://good-ware.github.io/js-task-queue/">API</a></li>
-<li><a href="https://runkit.com/dev-guy/exploring-goodware-task-queue">RunKit Example</a></li>
 </ul>
 <h2>Requirements</h2>
-<p>NodeJS 8+</p>
+<ul>
+<li>NodeJS 8+</li>
+<li>Typescript 5+</li>
+</ul>
 <h2>Installation</h2>
 <p><code>npm i --save @goodware/task-queue</code></p>
 <h2>Overview</h2>
-<p>This lightweight, battle-tested, single-dependency (joi) task queue limits the number of tasks (synchronous or asynchronous) that execute concurrently. The purpose of limiting task execution is to control resource usage such as memory and database connections.</p>
+<p>This lightweight, battle-tested task queue limits the number of tasks (synchronous or asynchronous which are of course plain old <code>Promises</code>) that execute concurrently. The purpose of limiting task execution is to control resource usage such as memory and database connections. Thus, it's an alternative to <code>Promise.all()</code>, <code>Promise.allSettled()</code> etc.. TypeScript declarations are bundled.</p>
 <p>Although several packages address this use case, this is apparently the only library that can queue tasks post-instantiation without using generators. The API is, most of all, easy to learn and use.</p>
 <h2>Creation</h2>
-<p>A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has one required and one optional property:</p>
+<p>A task-queue object is instantiated by providing a configuration object to the constructor. The configuration object currently has two optional properties:</p>
 <table>
 <thead>
 <tr>
@@ -84,7 +89,7 @@
 </tr>
 </tbody>
 </table>
-<p>size can be provided without workers. workers can provided without size.</p>
+<p><code>size</code> can be provided without <code>workers</code>. <code>workers</code> can be provided without <code>size</code>. If both are omitted they default to <code>1</code>.</p>
 <h2>Usage</h2>
 <p>Functions are queued via the asynchronous method <code>push(task)</code>. This method accepts a function named <code>task</code> and returns a Promise that resolves to an object when the <code>task</code> function is called (<em>not</em> when <code>task</code> returns). <code>task</code> is called only when a worker is available. <code>task</code> does not need to return a Promise, but if it does, it can be acquired via the <code>promise</code> property of the object returned by <code>push().</code></p>
 <h3>Brief Example</h3>
@@ -185,12 +190,11 @@ for (let i = 1; i &lt;= 100; ++i) {
   // The most basic implementation of backpressure: wait 50 ms
   if (queue.full) {
     console.log('full');
-    await new Promise((resolve)=>setTimeout(resolve, 50));
-  }  
-  else {
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  } else {
     await queue.push(doWork);
     console.log('queued');
-  }    
+  }
 }
 
 await queue.stop();
@@ -207,7 +211,7 @@ await queue.stop();
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Sat May 28 2022 09:20:23 GMT-0700 (Pacific Daylight Time) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.7</a> on Tue Mar 31 2026 18:35:22 GMT-0700 (Pacific Daylight Time) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
